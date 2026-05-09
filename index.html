@@ -132,6 +132,8 @@
       gravity: 0.8,
       jumpPower: -14,
       boostJumpPower: -19,
+      moveSpeed: 4.8,
+      scrollStartX: canvas.width * 0.58,
       obstacleTimer: 0,
       coinTimer: 0,
       boostTimer: 0,
@@ -144,7 +146,7 @@
       input: { left: false, right: false }
     };
 
-    const player = { x: 180, y: state.groundY - 56, w: 34, h: 56, vy: 0, onGround: true };
+    const player = { x: 180, y: state.groundY - 56, w: 34, h: 56, vy: 0, onGround: true, facing: 1, walkPhase: 0 };
 
     bestEl.textContent = state.best;
 
@@ -161,8 +163,10 @@
       state.jumpPads = [];
       state.pits = [];
       player.y = state.groundY - player.h;
+      player.x = 180;
       player.vy = 0;
       player.onGround = true;
+      player.walkPhase = 0;
       scoreEl.textContent = '0';
       overlay.classList.remove('show');
     }
@@ -222,8 +226,28 @@
     function update() {
       if (!state.running) return;
 
-      if (state.input.left) state.worldX = Math.max(0, state.worldX - 4.2);
-      if (state.input.right) state.worldX += 4.8;
+      const moveDir = (state.input.right ? 1 : 0) - (state.input.left ? 1 : 0);
+      const moving = moveDir !== 0;
+      if (moving) {
+        player.facing = moveDir;
+        player.walkPhase += 0.2;
+      }
+
+      if (moveDir !== 0) {
+        player.x += moveDir * state.moveSpeed;
+      }
+
+      if (moveDir > 0 && player.x > state.scrollStartX) {
+        const scroll = player.x - state.scrollStartX;
+        player.x = state.scrollStartX;
+        state.worldX += scroll;
+      }
+      if (moveDir < 0 && player.x < 120) {
+        const worldBack = Math.min(120 - player.x, state.worldX);
+        state.worldX -= worldBack;
+        player.x += worldBack;
+      }
+      player.x = Math.max(20, Math.min(canvas.width - player.w - 20, player.x));
 
       player.vy += state.gravity;
       player.y += player.vy;
@@ -286,7 +310,6 @@
         }
       }
 
-      state.score += 0.1;
       state.speed += 0.0005;
       state.cloudsOffset += 1;
       scoreEl.textContent = Math.floor(state.score);
@@ -314,27 +337,39 @@
         if (sx > canvas.width || sx + pit.w < 0) continue;
         ctx.fillStyle = '#eaf6ff';
         ctx.fillRect(sx, state.groundY, pit.w, canvas.height - state.groundY);
-        ctx.fillStyle = '#657b83';
-        ctx.fillRect(sx, state.groundY, pit.w, 6);
       }
     }
 
     function drawPlayer() {
       const px = player.x;
       const py = player.y;
-      ctx.fillStyle = '#f7c69a';
-      ctx.beginPath();
-      ctx.arc(px + 17, py + 9, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#2f3b52';
-      ctx.fillRect(px + 11, py + 18, 12, 20);
-      ctx.strokeStyle = '#2f3b52';
+      const stride = player.onGround ? Math.sin(player.walkPhase) * 4 : 0;
+      const armSwing = player.onGround ? Math.sin(player.walkPhase + Math.PI) * 3 : 1;
+      const legY = py + 42;
+      const headX = px + 17;
+      const dir = player.facing;
+
+      ctx.strokeStyle = '#1f2937';
       ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+
+      ctx.fillStyle = '#f5c9a7';
       ctx.beginPath();
-      ctx.moveTo(px + 11, py + 24); ctx.lineTo(px + 4, py + 34);
-      ctx.moveTo(px + 23, py + 24); ctx.lineTo(px + 30, py + 34);
-      ctx.moveTo(px + 14, py + 38); ctx.lineTo(px + 10, py + 54);
-      ctx.moveTo(px + 20, py + 38); ctx.lineTo(px + 24, py + 54);
+      ctx.arc(headX, py + 9, 8, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#2563eb';
+      ctx.fillRect(px + 11, py + 18, 12, 18);
+
+      ctx.beginPath();
+      ctx.moveTo(px + 17, py + 22);
+      ctx.lineTo(px + 9 + armSwing * dir, py + 30);
+      ctx.moveTo(px + 17, py + 22);
+      ctx.lineTo(px + 25 - armSwing * dir, py + 30);
+      ctx.moveTo(px + 17, py + 36);
+      ctx.lineTo(px + 11 + stride, legY + 14);
+      ctx.moveTo(px + 17, py + 36);
+      ctx.lineTo(px + 23 - stride, legY + 14);
       ctx.stroke();
     }
 
