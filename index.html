@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>かんたん横スクロールジャンプゲーム</title>
+  <style>
+    :root {
+      --bg: #eaf6ff;
+      --ground: #7cc576;
+      --player: #ff8a65;
+      --obstacle: #4e342e;
+      --text: #1f2937;
+      --panel: rgba(255, 255, 255, 0.9);
+      --btn: #2563eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: linear-gradient(180deg, #dff3ff 0%, #f3fbff 60%, #ffffff 100%);
+      color: var(--text);
+      display: grid;
+      place-items: center;
+      min-height: 100svh;
+      padding: 12px;
+      user-select: none;
+      -webkit-user-select: none;
+      touch-action: manipulation;
+    }
+    .game-wrap {
+      width: min(96vw, 900px);
+    }
+    .hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+      font-weight: 700;
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: var(--panel);
+      backdrop-filter: blur(2px);
+    }
+    #game {
+      width: 100%;
+      aspect-ratio: 16 / 7;
+      border-radius: 14px;
+      display: block;
+      background: var(--bg);
+      box-shadow: 0 10px 30px rgba(0,0,0,.12);
+    }
+    .controls {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .jump-btn {
+      border: 0;
+      border-radius: 999px;
+      background: var(--btn);
+      color: white;
+      font-size: 1rem;
+      font-weight: 700;
+      padding: 14px;
+      width: 100%;
+    }
+    .hint {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-align: center;
+    }
+    .overlay {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0,0,0,.4);
+      padding: 20px;
+    }
+    .overlay.show { display: flex; }
+    .panel {
+      width: min(92vw, 380px);
+      border-radius: 14px;
+      padding: 20px;
+      background: white;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    .panel h2 { margin: 0 0 8px; }
+    .panel p { margin: 8px 0 16px; }
+    .restart-btn {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-weight: 700;
+      background: #111827;
+      color: #fff;
+      width: 100%;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="game-wrap">
+    <div class="hud">
+      <div>スコア: <span id="score">0</span></div>
+      <div>ハイスコア: <span id="best">0</span></div>
+    </div>
+    <canvas id="game" width="960" height="420" aria-label="横スクロールゲーム"></canvas>
+    <div class="controls">
+      <button class="jump-btn" id="jumpBtn" type="button">⬆ ジャンプ</button>
+      <div class="hint">操作: スペース / 画面タップ / ジャンプボタン</div>
+    </div>
+  </div>
+
+  <div id="overlay" class="overlay" role="dialog" aria-modal="true">
+    <div class="panel">
+      <h2>ゲームオーバー</h2>
+      <p>最終スコア: <strong id="finalScore">0</strong></p>
+      <button id="restartBtn" class="restart-btn" type="button">リスタート</button>
+    </div>
+  </div>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const scoreEl = document.getElementById('score');
+    const bestEl = document.getElementById('best');
+    const finalScoreEl = document.getElementById('finalScore');
+    const overlay = document.getElementById('overlay');
+    const restartBtn = document.getElementById('restartBtn');
+    const jumpBtn = document.getElementById('jumpBtn');
+
+    const state = {
+      running: true,
+      score: 0,
+      best: Number(localStorage.getItem('runner_best') || 0),
+      speed: 6,
+      gravity: 0.8,
+      jumpPower: -14,
+      spawnTimer: 0,
+      obstacles: [],
+      groundY: canvas.height - 70,
+      cloudsOffset: 0,
+    };
+
+    const player = {
+      x: 120,
+      y: state.groundY - 48,
+      w: 42,
+      h: 48,
+      vy: 0,
+      onGround: true,
+    };
+
+    bestEl.textContent = state.best;
+
+    function resetGame() {
+      state.running = true;
+      state.score = 0;
+      state.speed = 6;
+      state.spawnTimer = 0;
+      state.obstacles = [];
+      player.y = state.groundY - player.h;
+      player.vy = 0;
+      player.onGround = true;
+      scoreEl.textContent = '0';
+      overlay.classList.remove('show');
+    }
+
+    function jump() {
+      if (!state.running) return;
+      if (player.onGround) {
+        player.vy = state.jumpPower;
+        player.onGround = false;
+      }
+    }
+
+    function spawnObstacle() {
+      const h = 34 + Math.random() * 38;
+      const w = 20 + Math.random() * 28;
+      state.obstacles.push({
+        x: canvas.width + 10,
+        y: state.groundY - h,
+        w,
+        h,
+      });
+    }
+
+    function intersects(a, b) {
+      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+    }
+
+    function gameOver() {
+      state.running = false;
+      finalScoreEl.textContent = Math.floor(state.score);
+      if (state.score > state.best) {
+        state.best = Math.floor(state.score);
+        localStorage.setItem('runner_best', state.best);
+        bestEl.textContent = state.best;
+      }
+      overlay.classList.add('show');
+    }
+
+    function update() {
+      if (!state.running) return;
+
+      player.vy += state.gravity;
+      player.y += player.vy;
+
+      if (player.y >= state.groundY - player.h) {
+        player.y = state.groundY - player.h;
+        player.vy = 0;
+        player.onGround = true;
+      }
+
+      state.spawnTimer--;
+      if (state.spawnTimer <= 0) {
+        spawnObstacle();
+        state.spawnTimer = 60 + Math.random() * 50;
+      }
+
+      state.obstacles.forEach((o) => (o.x -= state.speed));
+      state.obstacles = state.obstacles.filter((o) => o.x + o.w > -10);
+
+      for (const obstacle of state.obstacles) {
+        if (intersects(player, obstacle)) {
+          gameOver();
+          break;
+        }
+      }
+
+      state.score += 0.1;
+      state.speed += 0.0008;
+      state.cloudsOffset += 1;
+      scoreEl.textContent = Math.floor(state.score);
+    }
+
+    function drawBackground() {
+      ctx.fillStyle = '#eaf6ff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      ctx.fillStyle = '#ffffff';
+      for (let i = 0; i < 5; i++) {
+        const x = (i * 220 - (state.cloudsOffset * 0.4) % 1100) + 80;
+        const y = 40 + (i % 3) * 36;
+        ctx.beginPath();
+        ctx.ellipse(x, y, 40, 20, 0, 0, Math.PI * 2);
+        ctx.ellipse(x + 26, y + 4, 34, 18, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      ctx.fillStyle = '#a7d889';
+      ctx.fillRect(0, state.groundY, canvas.width, canvas.height - state.groundY);
+
+      ctx.strokeStyle = '#86bf6c';
+      ctx.lineWidth = 4;
+      for (let i = 0; i < canvas.width; i += 40) {
+        const x = (i - (state.cloudsOffset * 2) % 40);
+        ctx.beginPath();
+        ctx.moveTo(x, state.groundY + 2);
+        ctx.lineTo(x + 18, state.groundY + 18);
+        ctx.stroke();
+      }
+    }
+
+    function drawPlayer() {
+      ctx.fillStyle = '#ff8a65';
+      ctx.fillRect(player.x, player.y, player.w, player.h);
+      ctx.fillStyle = '#263238';
+      ctx.fillRect(player.x + 28, player.y + 12, 6, 6);
+    }
+
+    function drawObstacles() {
+      ctx.fillStyle = '#4e342e';
+      state.obstacles.forEach((o) => {
+        ctx.fillRect(o.x, o.y, o.w, o.h);
+      });
+    }
+
+    function loop() {
+      update();
+      drawBackground();
+      drawPlayer();
+      drawObstacles();
+      requestAnimationFrame(loop);
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' || e.code === 'ArrowUp') {
+        e.preventDefault();
+        jump();
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('pointerdown', jump);
+    jumpBtn.addEventListener('pointerdown', jump);
+    restartBtn.addEventListener('click', resetGame);
+
+    resetGame();
+    loop();
+  </script>
+</body>
+</html>
