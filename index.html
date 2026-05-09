@@ -127,42 +127,48 @@
       running: true,
       score: 0,
       best: Number(localStorage.getItem('runner_best') || 0),
-      speed: 4.5,
       worldX: 0,
       gravity: 0.8,
       jumpPower: -14,
-      boostJumpPower: -19,
+      boostJumpPower: -20,
+      groundY: canvas.height - 70,
+      spawnX: canvas.width + 120,
       obstacleTimer: 0,
       coinTimer: 0,
-      boostTimer: 0,
+      pitTimer: 0,
+      padTimer: 0,
       obstacles: [],
       coins: [],
       jumpPads: [],
       pits: [],
-      groundY: canvas.height - 70,
       cloudsOffset: 0,
       input: { left: false, right: false }
     };
 
-    const player = { x: 180, y: state.groundY - 56, w: 34, h: 56, vy: 0, onGround: true };
+    const player = { x: 180, y: state.groundY - 62, w: 30, h: 62, vy: 0, onGround: true, dir: 1, walk: 0 };
+    const moveSpeed = 4.4;
+    const scrollTriggerX = canvas.width * 0.58;
 
     bestEl.textContent = state.best;
 
     function resetGame() {
       state.running = true;
       state.score = 0;
-      state.speed = 4.5;
       state.worldX = 0;
+      state.spawnX = canvas.width + 120;
       state.obstacleTimer = 0;
       state.coinTimer = 0;
-      state.boostTimer = 0;
+      state.pitTimer = 0;
+      state.padTimer = 80;
       state.obstacles = [];
       state.coins = [];
       state.jumpPads = [];
       state.pits = [];
+      player.x = 180;
       player.y = state.groundY - player.h;
       player.vy = 0;
       player.onGround = true;
+      player.walk = 0;
       scoreEl.textContent = '0';
       overlay.classList.remove('show');
     }
@@ -175,26 +181,30 @@
     }
 
     function spawnObstacle() {
-      const h = 34 + Math.random() * 38;
-      const w = 20 + Math.random() * 28;
-      state.obstacles.push({ x: canvas.width + state.worldX + 20, y: state.groundY - h, w, h });
+      const h = 30 + Math.random() * 40;
+      const w = 24 + Math.random() * 22;
+      state.obstacles.push({ x: state.spawnX, y: state.groundY - h, w, h });
+      state.spawnX += 140 + Math.random() * 110;
     }
 
     function spawnCoinGroup() {
-      const baseX = canvas.width + state.worldX + 40;
+      const baseX = state.spawnX + 20;
       const n = 3 + Math.floor(Math.random() * 3);
       for (let i = 0; i < n; i++) {
-        state.coins.push({ x: baseX + i * 42, y: state.groundY - 120 - Math.random() * 70, r: 11, taken: false });
+        state.coins.push({ x: baseX + i * 36, y: state.groundY - 110 - Math.random() * 60, r: 10, taken: false });
       }
+      state.spawnX += 180 + Math.random() * 120;
     }
 
     function spawnJumpPad() {
-      state.jumpPads.push({ x: canvas.width + state.worldX + 30, y: state.groundY - 10, w: 44, h: 10 });
+      state.jumpPads.push({ x: state.spawnX, y: state.groundY - 12, w: 46, h: 12 });
+      state.spawnX += 150 + Math.random() * 120;
     }
 
     function spawnPit() {
       const w = 90 + Math.random() * 80;
-      state.pits.push({ x: canvas.width + state.worldX + 60, w });
+      state.pits.push({ x: state.spawnX, w });
+      state.spawnX += w + 180 + Math.random() * 120;
     }
 
     function intersects(a, b) {
@@ -214,7 +224,7 @@
 
     function getGroundYAt(worldX) {
       for (const pit of state.pits) {
-        if (worldX >= pit.x && worldX <= pit.x + pit.w) return canvas.height + 100;
+        if (worldX >= pit.x && worldX <= pit.x + pit.w) return canvas.height + 200;
       }
       return state.groundY;
     }
@@ -222,8 +232,22 @@
     function update() {
       if (!state.running) return;
 
-      if (state.input.left) state.worldX = Math.max(0, state.worldX - 4.2);
-      if (state.input.right) state.worldX += 4.8;
+      let vx = 0;
+      if (state.input.left) vx -= moveSpeed;
+      if (state.input.right) vx += moveSpeed;
+      if (vx !== 0) {
+        player.dir = vx > 0 ? 1 : -1;
+        player.walk += Math.abs(vx) * 0.22;
+      }
+
+      player.x += vx;
+      if (player.x < 20) player.x = 20;
+
+      if (player.x > scrollTriggerX) {
+        const overflow = player.x - scrollTriggerX;
+        state.worldX += overflow;
+        player.x = scrollTriggerX;
+      }
 
       player.vy += state.gravity;
       player.y += player.vy;
@@ -231,33 +255,27 @@
       const footX = state.worldX + player.x + player.w * 0.5;
       const currentGround = getGroundYAt(footX);
 
-      if (player.y >= currentGround - player.h) {
+      if (player.vy >= 0 && player.y >= currentGround - player.h) {
         player.y = currentGround - player.h;
         player.vy = 0;
         player.onGround = true;
+      } else {
+        player.onGround = false;
       }
 
-      if (player.y > canvas.height + 40) gameOver();
+      if (player.y > canvas.height + 60) gameOver();
 
       state.obstacleTimer--;
       state.coinTimer--;
-      state.boostTimer--;
+      state.pitTimer--;
+      state.padTimer--;
 
-      if (state.obstacleTimer <= 0) {
-        spawnObstacle();
-        state.obstacleTimer = 95 + Math.random() * 70;
-      }
-      if (state.coinTimer <= 0) {
-        spawnCoinGroup();
-        state.coinTimer = 120 + Math.random() * 90;
-      }
-      if (state.boostTimer <= 0) {
-        spawnJumpPad();
-        if (Math.random() < 0.7) spawnPit();
-        state.boostTimer = 220 + Math.random() * 160;
-      }
+      if (state.obstacleTimer <= 0) { spawnObstacle(); state.obstacleTimer = 80 + Math.random() * 80; }
+      if (state.coinTimer <= 0) { spawnCoinGroup(); state.coinTimer = 120 + Math.random() * 120; }
+      if (state.pitTimer <= 0) { spawnPit(); state.pitTimer = 180 + Math.random() * 200; }
+      if (state.padTimer <= 0) { spawnJumpPad(); state.padTimer = 240 + Math.random() * 180; }
 
-      const leftWorld = state.worldX - 40;
+      const leftWorld = state.worldX - 120;
       state.obstacles = state.obstacles.filter((o) => o.x + o.w > leftWorld);
       state.coins = state.coins.filter((c) => !c.taken && c.x + c.r > leftWorld);
       state.jumpPads = state.jumpPads.filter((p) => p.x + p.w > leftWorld);
@@ -271,31 +289,31 @@
 
       for (const coin of state.coins) {
         const coinRect = { x: coin.x - coin.r, y: coin.y - coin.r, w: coin.r * 2, h: coin.r * 2 };
-        if (!coin.taken && intersects(playerRectWorld, coinRect)) {
+        if (intersects(playerRectWorld, coinRect)) {
           coin.taken = true;
-          state.score += 15;
+          state.score += 10;
         }
       }
 
       for (const pad of state.jumpPads) {
-        const onTop = player.onGround && playerRectWorld.x + player.w > pad.x && playerRectWorld.x < pad.x + pad.w;
-        const nearPadY = Math.abs(player.y + player.h - pad.y) < 2;
-        if (onTop && nearPadY) {
+        const overlapX = playerRectWorld.x + player.w > pad.x && playerRectWorld.x < pad.x + pad.w;
+        const touchingTop = player.vy >= 0 && (playerRectWorld.y + player.h) >= pad.y - 2 && (playerRectWorld.y + player.h) <= pad.y + 8;
+        if (overlapX && touchingTop) {
+          player.y = pad.y - player.h;
+          player.vy = 0;
+          player.onGround = true;
           jump(state.boostJumpPower);
           break;
         }
       }
 
-      state.score += 0.1;
-      state.speed += 0.0005;
-      state.cloudsOffset += 1;
-      scoreEl.textContent = Math.floor(state.score);
+      scoreEl.textContent = String(Math.floor(state.score));
+      state.cloudsOffset += 0.8;
     }
 
     function drawBackground() {
       ctx.fillStyle = '#eaf6ff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-
       ctx.fillStyle = '#ffffff';
       for (let i = 0; i < 5; i++) {
         const x = (i * 220 - (state.cloudsOffset * 0.4) % 1100) + 80;
@@ -313,45 +331,49 @@
         const sx = pit.x - state.worldX;
         if (sx > canvas.width || sx + pit.w < 0) continue;
         ctx.fillStyle = '#eaf6ff';
-        ctx.fillRect(sx, state.groundY, pit.w, canvas.height - state.groundY);
-        ctx.fillStyle = '#657b83';
-        ctx.fillRect(sx, state.groundY, pit.w, 6);
+        ctx.fillRect(sx, state.groundY, pit.w, canvas.height - state.groundY + 2);
       }
     }
 
     function drawPlayer() {
       const px = player.x;
       const py = player.y;
-      ctx.fillStyle = '#f7c69a';
-      ctx.beginPath();
-      ctx.arc(px + 17, py + 9, 8, 0, Math.PI * 2);
-      ctx.fill();
-      ctx.fillStyle = '#2f3b52';
-      ctx.fillRect(px + 11, py + 18, 12, 20);
-      ctx.strokeStyle = '#2f3b52';
+      const legSwing = player.onGround ? Math.sin(player.walk) * 5 : 0;
+      const armSwing = player.onGround ? Math.sin(player.walk + Math.PI) * 4 : 1;
+
+      ctx.strokeStyle = '#1f2937';
       ctx.lineWidth = 4;
+      ctx.lineCap = 'round';
+
       ctx.beginPath();
-      ctx.moveTo(px + 11, py + 24); ctx.lineTo(px + 4, py + 34);
-      ctx.moveTo(px + 23, py + 24); ctx.lineTo(px + 30, py + 34);
-      ctx.moveTo(px + 14, py + 38); ctx.lineTo(px + 10, py + 54);
-      ctx.moveTo(px + 20, py + 38); ctx.lineTo(px + 24, py + 54);
+      ctx.moveTo(px + 15, py + 22);
+      ctx.lineTo(px + 15 - armSwing, py + 36);
+      ctx.moveTo(px + 15, py + 22);
+      ctx.lineTo(px + 15 + armSwing, py + 36);
+      ctx.moveTo(px + 15, py + 42);
+      ctx.lineTo(px + 11 - legSwing, py + 60);
+      ctx.moveTo(px + 15, py + 42);
+      ctx.lineTo(px + 19 + legSwing, py + 60);
       ctx.stroke();
+
+      ctx.fillStyle = '#2563eb';
+      ctx.fillRect(px + 10, py + 20, 10, 22);
+      ctx.fillStyle = '#f4c7a1';
+      ctx.beginPath();
+      ctx.arc(px + 15, py + 11, 9, 0, Math.PI * 2);
+      ctx.fill();
     }
 
     function drawObstacles() {
       ctx.fillStyle = '#4e342e';
-      for (const o of state.obstacles) {
-        ctx.fillRect(o.x - state.worldX, o.y, o.w, o.h);
-      }
+      for (const o of state.obstacles) ctx.fillRect(o.x - state.worldX, o.y, o.w, o.h);
 
       for (const pad of state.jumpPads) {
         const sx = pad.x - state.worldX;
         ctx.fillStyle = '#ef4444';
         ctx.fillRect(sx, pad.y, pad.w, pad.h);
-        ctx.fillStyle = '#fca5a5';
-        for (let i = 0; i < 4; i++) {
-          ctx.fillRect(sx + 4 + i * 10, pad.y - 6, 6, 6);
-        }
+        ctx.fillStyle = '#fecaca';
+        for (let i = 0; i < 4; i++) ctx.fillRect(sx + 4 + i * 10, pad.y - 4, 6, 4);
       }
 
       for (const coin of state.coins) {
@@ -360,9 +382,6 @@
         ctx.beginPath();
         ctx.arc(sx, coin.y, coin.r, 0, Math.PI * 2);
         ctx.fill();
-        ctx.strokeStyle = '#d4a514';
-        ctx.lineWidth = 3;
-        ctx.stroke();
       }
     }
 
