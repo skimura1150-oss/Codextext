@@ -8,8 +8,6 @@
     :root {
       --bg: #eaf6ff;
       --ground: #7cc576;
-      --player: #ff8a65;
-      --obstacle: #4e342e;
       --text: #1f2937;
       --panel: rgba(255, 255, 255, 0.9);
       --btn: #2563eb;
@@ -28,9 +26,7 @@
       -webkit-user-select: none;
       touch-action: manipulation;
     }
-    .game-wrap {
-      width: min(96vw, 900px);
-    }
+    .game-wrap { width: min(96vw, 900px); }
     .hud {
       display: flex;
       justify-content: space-between;
@@ -52,11 +48,15 @@
     }
     .controls {
       display: grid;
-      grid-template-columns: 1fr;
       gap: 8px;
       margin-top: 10px;
     }
-    .jump-btn {
+    .move-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+    .btn {
       border: 0;
       border-radius: 999px;
       background: var(--btn);
@@ -65,41 +65,24 @@
       font-weight: 700;
       padding: 14px;
       width: 100%;
+      touch-action: manipulation;
     }
-    .hint {
-      font-size: 0.9rem;
-      opacity: 0.8;
-      text-align: center;
-    }
+    .jump-btn { background: #0f766e; }
+    .hint { font-size: 0.9rem; opacity: 0.8; text-align: center; }
     .overlay {
-      position: fixed;
-      inset: 0;
-      display: none;
-      align-items: center;
-      justify-content: center;
-      background: rgba(0,0,0,.4);
-      padding: 20px;
+      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
+      background: rgba(0,0,0,.4); padding: 20px;
     }
     .overlay.show { display: flex; }
     .panel {
-      width: min(92vw, 380px);
-      border-radius: 14px;
-      padding: 20px;
-      background: white;
-      text-align: center;
-      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+      width: min(92vw, 380px); border-radius: 14px; padding: 20px; background: white;
+      text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25);
     }
     .panel h2 { margin: 0 0 8px; }
     .panel p { margin: 8px 0 16px; }
     .restart-btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-weight: 700;
-      background: #111827;
-      color: #fff;
-      width: 100%;
-      font-size: 1rem;
+      border: 0; border-radius: 10px; padding: 12px 16px; font-weight: 700;
+      background: #111827; color: #fff; width: 100%; font-size: 1rem;
     }
   </style>
 </head>
@@ -111,8 +94,12 @@
     </div>
     <canvas id="game" width="960" height="420" aria-label="横スクロールゲーム"></canvas>
     <div class="controls">
-      <button class="jump-btn" id="jumpBtn" type="button">⬆ ジャンプ</button>
-      <div class="hint">操作: スペース / 画面タップ / ジャンプボタン</div>
+      <div class="move-row">
+        <button class="btn" id="leftBtn" type="button">⬅ 左へ</button>
+        <button class="btn" id="rightBtn" type="button">➡ 右へ</button>
+      </div>
+      <button class="btn jump-btn" id="jumpBtn" type="button">⬆ ジャンプ</button>
+      <div class="hint">操作: ← → / A D / スペース / タップボタン</div>
     </div>
   </div>
 
@@ -133,37 +120,46 @@
     const overlay = document.getElementById('overlay');
     const restartBtn = document.getElementById('restartBtn');
     const jumpBtn = document.getElementById('jumpBtn');
+    const leftBtn = document.getElementById('leftBtn');
+    const rightBtn = document.getElementById('rightBtn');
 
     const state = {
       running: true,
       score: 0,
       best: Number(localStorage.getItem('runner_best') || 0),
-      speed: 6,
+      speed: 4.5,
+      worldX: 0,
       gravity: 0.8,
       jumpPower: -14,
-      spawnTimer: 0,
+      boostJumpPower: -19,
+      obstacleTimer: 0,
+      coinTimer: 0,
+      boostTimer: 0,
       obstacles: [],
+      coins: [],
+      jumpPads: [],
+      pits: [],
       groundY: canvas.height - 70,
       cloudsOffset: 0,
+      input: { left: false, right: false }
     };
 
-    const player = {
-      x: 120,
-      y: state.groundY - 48,
-      w: 42,
-      h: 48,
-      vy: 0,
-      onGround: true,
-    };
+    const player = { x: 180, y: state.groundY - 56, w: 34, h: 56, vy: 0, onGround: true };
 
     bestEl.textContent = state.best;
 
     function resetGame() {
       state.running = true;
       state.score = 0;
-      state.speed = 6;
-      state.spawnTimer = 0;
+      state.speed = 4.5;
+      state.worldX = 0;
+      state.obstacleTimer = 0;
+      state.coinTimer = 0;
+      state.boostTimer = 0;
       state.obstacles = [];
+      state.coins = [];
+      state.jumpPads = [];
+      state.pits = [];
       player.y = state.groundY - player.h;
       player.vy = 0;
       player.onGround = true;
@@ -171,10 +167,9 @@
       overlay.classList.remove('show');
     }
 
-    function jump() {
-      if (!state.running) return;
-      if (player.onGround) {
-        player.vy = state.jumpPower;
+    function jump(force = state.jumpPower) {
+      if (state.running && player.onGround) {
+        player.vy = force;
         player.onGround = false;
       }
     }
@@ -182,12 +177,24 @@
     function spawnObstacle() {
       const h = 34 + Math.random() * 38;
       const w = 20 + Math.random() * 28;
-      state.obstacles.push({
-        x: canvas.width + 10,
-        y: state.groundY - h,
-        w,
-        h,
-      });
+      state.obstacles.push({ x: canvas.width + state.worldX + 20, y: state.groundY - h, w, h });
+    }
+
+    function spawnCoinGroup() {
+      const baseX = canvas.width + state.worldX + 40;
+      const n = 3 + Math.floor(Math.random() * 3);
+      for (let i = 0; i < n; i++) {
+        state.coins.push({ x: baseX + i * 42, y: state.groundY - 120 - Math.random() * 70, r: 11, taken: false });
+      }
+    }
+
+    function spawnJumpPad() {
+      state.jumpPads.push({ x: canvas.width + state.worldX + 30, y: state.groundY - 10, w: 44, h: 10 });
+    }
+
+    function spawnPit() {
+      const w = 90 + Math.random() * 80;
+      state.pits.push({ x: canvas.width + state.worldX + 60, w });
     }
 
     function intersects(a, b) {
@@ -205,36 +212,82 @@
       overlay.classList.add('show');
     }
 
+    function getGroundYAt(worldX) {
+      for (const pit of state.pits) {
+        if (worldX >= pit.x && worldX <= pit.x + pit.w) return canvas.height + 100;
+      }
+      return state.groundY;
+    }
+
     function update() {
       if (!state.running) return;
+
+      if (state.input.left) state.worldX = Math.max(0, state.worldX - 4.2);
+      if (state.input.right) state.worldX += 4.8;
 
       player.vy += state.gravity;
       player.y += player.vy;
 
-      if (player.y >= state.groundY - player.h) {
-        player.y = state.groundY - player.h;
+      const footX = state.worldX + player.x + player.w * 0.5;
+      const currentGround = getGroundYAt(footX);
+
+      if (player.y >= currentGround - player.h) {
+        player.y = currentGround - player.h;
         player.vy = 0;
         player.onGround = true;
       }
 
-      state.spawnTimer--;
-      if (state.spawnTimer <= 0) {
+      if (player.y > canvas.height + 40) gameOver();
+
+      state.obstacleTimer--;
+      state.coinTimer--;
+      state.boostTimer--;
+
+      if (state.obstacleTimer <= 0) {
         spawnObstacle();
-        state.spawnTimer = 60 + Math.random() * 50;
+        state.obstacleTimer = 95 + Math.random() * 70;
+      }
+      if (state.coinTimer <= 0) {
+        spawnCoinGroup();
+        state.coinTimer = 120 + Math.random() * 90;
+      }
+      if (state.boostTimer <= 0) {
+        spawnJumpPad();
+        if (Math.random() < 0.7) spawnPit();
+        state.boostTimer = 220 + Math.random() * 160;
       }
 
-      state.obstacles.forEach((o) => (o.x -= state.speed));
-      state.obstacles = state.obstacles.filter((o) => o.x + o.w > -10);
+      const leftWorld = state.worldX - 40;
+      state.obstacles = state.obstacles.filter((o) => o.x + o.w > leftWorld);
+      state.coins = state.coins.filter((c) => !c.taken && c.x + c.r > leftWorld);
+      state.jumpPads = state.jumpPads.filter((p) => p.x + p.w > leftWorld);
+      state.pits = state.pits.filter((p) => p.x + p.w > leftWorld);
+
+      const playerRectWorld = { x: state.worldX + player.x, y: player.y, w: player.w, h: player.h };
 
       for (const obstacle of state.obstacles) {
-        if (intersects(player, obstacle)) {
-          gameOver();
+        if (intersects(playerRectWorld, obstacle)) { gameOver(); break; }
+      }
+
+      for (const coin of state.coins) {
+        const coinRect = { x: coin.x - coin.r, y: coin.y - coin.r, w: coin.r * 2, h: coin.r * 2 };
+        if (!coin.taken && intersects(playerRectWorld, coinRect)) {
+          coin.taken = true;
+          state.score += 15;
+        }
+      }
+
+      for (const pad of state.jumpPads) {
+        const onTop = player.onGround && playerRectWorld.x + player.w > pad.x && playerRectWorld.x < pad.x + pad.w;
+        const nearPadY = Math.abs(player.y + player.h - pad.y) < 2;
+        if (onTop && nearPadY) {
+          jump(state.boostJumpPower);
           break;
         }
       }
 
       state.score += 0.1;
-      state.speed += 0.0008;
+      state.speed += 0.0005;
       state.cloudsOffset += 1;
       scoreEl.textContent = Math.floor(state.score);
     }
@@ -256,29 +309,61 @@
       ctx.fillStyle = '#a7d889';
       ctx.fillRect(0, state.groundY, canvas.width, canvas.height - state.groundY);
 
-      ctx.strokeStyle = '#86bf6c';
-      ctx.lineWidth = 4;
-      for (let i = 0; i < canvas.width; i += 40) {
-        const x = (i - (state.cloudsOffset * 2) % 40);
-        ctx.beginPath();
-        ctx.moveTo(x, state.groundY + 2);
-        ctx.lineTo(x + 18, state.groundY + 18);
-        ctx.stroke();
+      for (const pit of state.pits) {
+        const sx = pit.x - state.worldX;
+        if (sx > canvas.width || sx + pit.w < 0) continue;
+        ctx.fillStyle = '#eaf6ff';
+        ctx.fillRect(sx, state.groundY, pit.w, canvas.height - state.groundY);
+        ctx.fillStyle = '#657b83';
+        ctx.fillRect(sx, state.groundY, pit.w, 6);
       }
     }
 
     function drawPlayer() {
-      ctx.fillStyle = '#ff8a65';
-      ctx.fillRect(player.x, player.y, player.w, player.h);
-      ctx.fillStyle = '#263238';
-      ctx.fillRect(player.x + 28, player.y + 12, 6, 6);
+      const px = player.x;
+      const py = player.y;
+      ctx.fillStyle = '#f7c69a';
+      ctx.beginPath();
+      ctx.arc(px + 17, py + 9, 8, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#2f3b52';
+      ctx.fillRect(px + 11, py + 18, 12, 20);
+      ctx.strokeStyle = '#2f3b52';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.moveTo(px + 11, py + 24); ctx.lineTo(px + 4, py + 34);
+      ctx.moveTo(px + 23, py + 24); ctx.lineTo(px + 30, py + 34);
+      ctx.moveTo(px + 14, py + 38); ctx.lineTo(px + 10, py + 54);
+      ctx.moveTo(px + 20, py + 38); ctx.lineTo(px + 24, py + 54);
+      ctx.stroke();
     }
 
     function drawObstacles() {
       ctx.fillStyle = '#4e342e';
-      state.obstacles.forEach((o) => {
-        ctx.fillRect(o.x, o.y, o.w, o.h);
-      });
+      for (const o of state.obstacles) {
+        ctx.fillRect(o.x - state.worldX, o.y, o.w, o.h);
+      }
+
+      for (const pad of state.jumpPads) {
+        const sx = pad.x - state.worldX;
+        ctx.fillStyle = '#ef4444';
+        ctx.fillRect(sx, pad.y, pad.w, pad.h);
+        ctx.fillStyle = '#fca5a5';
+        for (let i = 0; i < 4; i++) {
+          ctx.fillRect(sx + 4 + i * 10, pad.y - 6, 6, 6);
+        }
+      }
+
+      for (const coin of state.coins) {
+        const sx = coin.x - state.worldX;
+        ctx.fillStyle = '#facc15';
+        ctx.beginPath();
+        ctx.arc(sx, coin.y, coin.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#d4a514';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
     }
 
     function loop() {
@@ -290,14 +375,27 @@
     }
 
     window.addEventListener('keydown', (e) => {
-      if (e.code === 'Space' || e.code === 'ArrowUp') {
-        e.preventDefault();
-        jump();
-      }
+      if (['Space', 'ArrowUp', 'KeyW'].includes(e.code)) { e.preventDefault(); jump(); }
+      if (['ArrowLeft', 'KeyA'].includes(e.code)) state.input.left = true;
+      if (['ArrowRight', 'KeyD'].includes(e.code)) state.input.right = true;
     }, { passive: false });
+
+    window.addEventListener('keyup', (e) => {
+      if (['ArrowLeft', 'KeyA'].includes(e.code)) state.input.left = false;
+      if (['ArrowRight', 'KeyD'].includes(e.code)) state.input.right = false;
+    });
+
+    function bindHold(button, onDown, onUp) {
+      button.addEventListener('pointerdown', (e) => { e.preventDefault(); onDown(); });
+      button.addEventListener('pointerup', onUp);
+      button.addEventListener('pointerleave', onUp);
+      button.addEventListener('pointercancel', onUp);
+    }
 
     canvas.addEventListener('pointerdown', jump);
     jumpBtn.addEventListener('pointerdown', jump);
+    bindHold(leftBtn, () => state.input.left = true, () => state.input.left = false);
+    bindHold(rightBtn, () => state.input.right = true, () => state.input.right = false);
     restartBtn.addEventListener('click', resetGame);
 
     resetGame();
