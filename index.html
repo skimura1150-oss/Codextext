@@ -2,423 +2,194 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-  <title>かんたん横スクロールジャンプゲーム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>江戸時代誕生 物語スライド</title>
   <style>
     :root {
-      --bg: #eaf6ff;
-      --ground: #7cc576;
-      --text: #1f2937;
-      --panel: rgba(255, 255, 255, 0.9);
-      --btn: #2563eb;
+      --bg: #f4f8ff;
+      --card: #ffffff;
+      --ink: #1f2937;
+      --sub: #4b5563;
+      --accent: #1d4ed8;
+      --accent-soft: #dbeafe;
+      --border: #d1d5db;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-      background: linear-gradient(180deg, #dff3ff 0%, #f3fbff 60%, #ffffff 100%);
-      color: var(--text);
+      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
+      background: radial-gradient(circle at top, #e0ecff, var(--bg));
+      color: var(--ink);
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+    }
+    header {
+      padding: 14px 18px;
+      font-weight: 700;
+      background: rgba(255,255,255,.85);
+      border-bottom: 1px solid var(--border);
+      backdrop-filter: blur(6px);
+    }
+    .stage {
       display: grid;
       place-items: center;
-      min-height: 100svh;
-      padding: 12px;
-      user-select: none;
-      -webkit-user-select: none;
-      touch-action: manipulation;
+      padding: 18px;
     }
-    .game-wrap { width: min(96vw, 900px); }
-    .hud {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-      font-weight: 700;
-      padding: 10px 12px;
+    .deck {
+      width: min(980px, 96vw);
+    }
+    .slide {
+      display: none;
+      background: var(--card);
+      border-radius: 18px;
+      border: 1px solid var(--border);
+      box-shadow: 0 14px 34px rgba(0,0,0,.12);
+      padding: 26px;
+      min-height: 62vh;
+    }
+    .slide.active { display: block; }
+    h1 { margin: 0 0 12px; font-size: clamp(1.5rem, 3.5vw, 2.2rem); }
+    h2 { margin: 0 0 12px; font-size: clamp(1.3rem, 3vw, 1.9rem); color: var(--accent); }
+    p, li { line-height: 1.8; font-size: clamp(1rem, 1.9vw, 1.15rem); }
+    .narration {
+      background: #f8fafc;
+      border-left: 5px solid var(--accent);
+      padding: 12px 14px;
+      border-radius: 10px;
+      margin: 12px 0 16px;
+    }
+    .idea {
+      margin-top: 12px;
+      background: var(--accent-soft);
       border-radius: 12px;
-      background: var(--panel);
-      backdrop-filter: blur(2px);
+      padding: 12px 14px;
     }
-    #game {
-      width: 100%;
-      aspect-ratio: 16 / 7;
-      border-radius: 14px;
-      display: block;
-      background: var(--bg);
-      box-shadow: 0 10px 30px rgba(0,0,0,.12);
-    }
+    .idea h3 { margin: 0 0 8px; font-size: 1rem; }
     .controls {
-      display: grid;
-      gap: 8px;
-      margin-top: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 18px 18px;
+      flex-wrap: wrap;
     }
-    .move-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-    .btn {
+    button {
       border: 0;
       border-radius: 999px;
-      background: var(--btn);
-      color: white;
+      padding: 11px 18px;
       font-size: 1rem;
       font-weight: 700;
-      padding: 14px;
-      width: 100%;
-      touch-action: manipulation;
+      cursor: pointer;
+      background: var(--accent);
+      color: #fff;
     }
-    .jump-btn { background: #0f766e; }
-    .hint { font-size: 0.9rem; opacity: 0.8; text-align: center; }
-    .overlay {
-      position: fixed; inset: 0; display: none; align-items: center; justify-content: center;
-      background: rgba(0,0,0,.4); padding: 20px;
+    button.secondary { background: #374151; }
+    .counter {
+      min-width: 120px;
+      text-align: center;
+      font-weight: 700;
+      color: var(--sub);
     }
-    .overlay.show { display: flex; }
-    .panel {
-      width: min(92vw, 380px); border-radius: 14px; padding: 20px; background: white;
-      text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,.25);
-    }
-    .panel h2 { margin: 0 0 8px; }
-    .panel p { margin: 8px 0 16px; }
-    .restart-btn {
-      border: 0; border-radius: 10px; padding: 12px 16px; font-weight: 700;
-      background: #111827; color: #fff; width: 100%; font-size: 1rem;
-    }
+    .keys { color: var(--sub); font-size: .92rem; }
   </style>
 </head>
 <body>
-  <div class="game-wrap">
-    <div class="hud">
-      <div>スコア: <span id="score">0</span></div>
-      <div>ハイスコア: <span id="best">0</span></div>
-    </div>
-    <canvas id="game" width="960" height="420" aria-label="横スクロールゲーム"></canvas>
-    <div class="controls">
-      <div class="move-row">
-        <button class="btn" id="leftBtn" type="button">⬅ 左へ</button>
-        <button class="btn" id="rightBtn" type="button">➡ 右へ</button>
-      </div>
-      <button class="btn jump-btn" id="jumpBtn" type="button">⬆ ジャンプ</button>
-      <div class="hint">操作: ← → / A D / スペース / タップボタン</div>
-    </div>
-  </div>
+  <header>小学生向け歴史スライド：江戸時代誕生ストーリー</header>
 
-  <div id="overlay" class="overlay" role="dialog" aria-modal="true">
-    <div class="panel">
-      <h2>ゲームオーバー</h2>
-      <p>最終スコア: <strong id="finalScore">0</strong></p>
-      <button id="restartBtn" class="restart-btn" type="button">リスタート</button>
+  <main class="stage">
+    <div class="deck" id="deck">
+      <section class="slide active">
+        <h1>はじまりは、ひとりのねばり強い武将から！</h1>
+        <div class="narration"><p>むかし日本には、たくさんの大名が力をあらそっていた時代がありました。その中で、あきらめずにチャンスを待ちつづけた人物がいます。その名は――<strong>徳川家康</strong>！</p></div>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>朝日を背に立つ家康（やさしい表情）</li><li>日本地図の上に「戦国時代」と書かれた旗</li></ul></div>
+      </section>
+
+      <section class="slide">
+        <h2>子どものころから、がまんの毎日！</h2>
+        <div class="narration"><p>家康は小さいころ、ほかの大名のもとで人質としてくらしました。自由が少ない生活でも、家康は<strong>よく見て、よく学び、心を強く</strong>しました。「今は待つとき」と考えたのです。</p></div>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>小さな家康が障子のすき間から外を見ている</li><li>ノートに作戦を書きこむ家康</li></ul></div>
+      </section>
+
+      <section class="slide">
+        <h2>強いリーダーのそばで学ぶ！</h2>
+        <div class="narration"><p>戦国時代には、織田信長と豊臣秀吉という強いリーダーがいました。家康は、ときに戦い、ときに協力しながら、<strong>国をまとめる方法</strong>を学んでいきます。</p></div>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>信長・秀吉・家康の三人が並ぶ（歴史人物カード風）</li><li>パズルのピースがそろう演出</li></ul></div>
+      </section>
+
+      <section class="slide">
+        <h2>天下分け目の大勝負！（1600年）</h2>
+        <div class="narration"><p>1600年、関ヶ原で大きな戦いがおこります。家康は多くの味方をまとめ、作戦を立てて勝利しました。この勝利で、家康は日本でいちばん強い立場に近づきます。</p></div>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>霧の中で向かい合う二つの軍</li><li>地図上に矢印で作戦ルート</li></ul></div>
+      </section>
+
+      <section class="slide">
+        <h2>ついに「将軍」に！（1603年）</h2>
+        <div class="narration"><p>1603年、家康は朝廷から<strong>征夷大将軍</strong>に任命され、江戸（今の東京）に<strong>江戸幕府</strong>を開きました。ここから江戸時代がはじまります！</p></div>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>江戸城と「祝・江戸幕府」</li><li>将軍の衣装を着た家康</li></ul></div>
+      </section>
+
+      <section class="slide">
+        <h2>なぜ江戸にしたの？</h2>
+        <div class="narration"><p>江戸は当時、今ほど大きな町ではありませんでした。家康は川や道を整え、全国とつながる便利な中心地に育てました。江戸はどんどん発展し、たくさんの人が集まる町になります。</p></div>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>「むかしの江戸」→「にぎやかな江戸」ビフォーアフター</li><li>橋・船・商人でにぎわう町</li></ul></div>
+      </section>
+
+      <section class="slide">
+        <h2>戦いをへらすしくみを作った！</h2>
+        <div class="narration"><p>家康と徳川の将軍たちは、大名が勝手に戦いをおこしにくいように、ルールや仕組みを整えました。その結果、江戸時代には長い平和が続き、文化や学問が広がりました。</p></div>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>ルールブックを持つ役人</li><li>花火や歌舞伎、寺子屋の風景</li></ul></div>
+      </section>
+
+      <section class="slide">
+        <h2>まとめ：家康が江戸幕府を作れた3つの理由</h2>
+        <ol>
+          <li><strong>がまん強く待てたこと</strong>（あわてなかった）</li>
+          <li><strong>人をまとめる力</strong>（味方を増やした）</li>
+          <li><strong>先を読む力</strong>（江戸を選び、しくみを作った）</li>
+        </ol>
+        <p class="narration">だからこそ、家康は江戸幕府を誕生させることができたのです。</p>
+        <div class="idea"><h3>絵のアイデア</h3><ul><li>3つのカギ（がまん・まとめる・先読み）</li><li>最後に笑顔の家康とにぎやかな江戸の町</li></ul></div>
+      </section>
     </div>
+  </main>
+
+  <div class="controls">
+    <button class="secondary" id="prevBtn">← 前へ</button>
+    <div id="counter" class="counter">1 / 8</div>
+    <button id="nextBtn">次へ →</button>
+    <div class="keys">キーボード: ← → キーでも操作できます</div>
   </div>
 
   <script>
-    const canvas = document.getElementById('game');
-    const ctx = canvas.getContext('2d');
-    const scoreEl = document.getElementById('score');
-    const bestEl = document.getElementById('best');
-    const finalScoreEl = document.getElementById('finalScore');
-    const overlay = document.getElementById('overlay');
-    const restartBtn = document.getElementById('restartBtn');
-    const jumpBtn = document.getElementById('jumpBtn');
-    const leftBtn = document.getElementById('leftBtn');
-    const rightBtn = document.getElementById('rightBtn');
+    const slides = [...document.querySelectorAll('.slide')];
+    const counter = document.getElementById('counter');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let current = 0;
 
-    const state = {
-      running: true,
-      score: 0,
-      best: Number(localStorage.getItem('runner_best') || 0),
-      worldX: 0,
-      gravity: 0.8,
-      jumpPower: -14,
-      boostJumpPower: -20,
-      groundY: canvas.height - 70,
-      spawnX: canvas.width + 120,
-      obstacleTimer: 0,
-      coinTimer: 0,
-      pitTimer: 0,
-      padTimer: 0,
-      obstacles: [],
-      coins: [],
-      jumpPads: [],
-      pits: [],
-      cloudsOffset: 0,
-      input: { left: false, right: false }
-    };
-
-    const player = { x: 180, y: state.groundY - 62, w: 30, h: 62, vy: 0, onGround: true, dir: 1, walk: 0 };
-    const moveSpeed = 4.4;
-    const scrollTriggerX = canvas.width * 0.58;
-
-    bestEl.textContent = state.best;
-
-    function resetGame() {
-      state.running = true;
-      state.score = 0;
-      state.worldX = 0;
-      state.spawnX = canvas.width + 120;
-      state.obstacleTimer = 0;
-      state.coinTimer = 0;
-      state.pitTimer = 0;
-      state.padTimer = 80;
-      state.obstacles = [];
-      state.coins = [];
-      state.jumpPads = [];
-      state.pits = [];
-      player.x = 180;
-      player.y = state.groundY - player.h;
-      player.vy = 0;
-      player.onGround = true;
-      player.walk = 0;
-      scoreEl.textContent = '0';
-      overlay.classList.remove('show');
+    function render() {
+      slides.forEach((s, i) => s.classList.toggle('active', i === current));
+      counter.textContent = `${current + 1} / ${slides.length}`;
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
     }
 
-    function jump(force = state.jumpPower) {
-      if (state.running && player.onGround) {
-        player.vy = force;
-        player.onGround = false;
-      }
+    function move(delta) {
+      const next = current + delta;
+      if (next < 0 || next >= slides.length) return;
+      current = next;
+      render();
     }
 
-    function spawnObstacle() {
-      const h = 30 + Math.random() * 40;
-      const w = 24 + Math.random() * 22;
-      state.obstacles.push({ x: state.spawnX, y: state.groundY - h, w, h });
-      state.spawnX += 140 + Math.random() * 110;
-    }
-
-    function spawnCoinGroup() {
-      const baseX = state.spawnX + 20;
-      const n = 3 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < n; i++) {
-        state.coins.push({ x: baseX + i * 36, y: state.groundY - 110 - Math.random() * 60, r: 10, taken: false });
-      }
-      state.spawnX += 180 + Math.random() * 120;
-    }
-
-    function spawnJumpPad() {
-      state.jumpPads.push({ x: state.spawnX, y: state.groundY - 12, w: 46, h: 12 });
-      state.spawnX += 150 + Math.random() * 120;
-    }
-
-    function spawnPit() {
-      const w = 90 + Math.random() * 80;
-      state.pits.push({ x: state.spawnX, w });
-      state.spawnX += w + 180 + Math.random() * 120;
-    }
-
-    function intersects(a, b) {
-      return a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
-    }
-
-    function gameOver() {
-      state.running = false;
-      finalScoreEl.textContent = Math.floor(state.score);
-      if (state.score > state.best) {
-        state.best = Math.floor(state.score);
-        localStorage.setItem('runner_best', state.best);
-        bestEl.textContent = state.best;
-      }
-      overlay.classList.add('show');
-    }
-
-    function getGroundYAt(worldX) {
-      for (const pit of state.pits) {
-        if (worldX >= pit.x && worldX <= pit.x + pit.w) return canvas.height + 200;
-      }
-      return state.groundY;
-    }
-
-    function update() {
-      if (!state.running) return;
-
-      let vx = 0;
-      if (state.input.left) vx -= moveSpeed;
-      if (state.input.right) vx += moveSpeed;
-      if (vx !== 0) {
-        player.dir = vx > 0 ? 1 : -1;
-        player.walk += Math.abs(vx) * 0.22;
-      }
-
-      player.x += vx;
-      if (player.x < 20) player.x = 20;
-
-      if (player.x > scrollTriggerX) {
-        const overflow = player.x - scrollTriggerX;
-        state.worldX += overflow;
-        player.x = scrollTriggerX;
-      }
-
-      player.vy += state.gravity;
-      player.y += player.vy;
-
-      const footX = state.worldX + player.x + player.w * 0.5;
-      const currentGround = getGroundYAt(footX);
-
-      if (player.vy >= 0 && player.y >= currentGround - player.h) {
-        player.y = currentGround - player.h;
-        player.vy = 0;
-        player.onGround = true;
-      } else {
-        player.onGround = false;
-      }
-
-      if (player.y > canvas.height + 60) gameOver();
-
-      state.obstacleTimer--;
-      state.coinTimer--;
-      state.pitTimer--;
-      state.padTimer--;
-
-      if (state.obstacleTimer <= 0) { spawnObstacle(); state.obstacleTimer = 80 + Math.random() * 80; }
-      if (state.coinTimer <= 0) { spawnCoinGroup(); state.coinTimer = 120 + Math.random() * 120; }
-      if (state.pitTimer <= 0) { spawnPit(); state.pitTimer = 180 + Math.random() * 200; }
-      if (state.padTimer <= 0) { spawnJumpPad(); state.padTimer = 240 + Math.random() * 180; }
-
-      const leftWorld = state.worldX - 120;
-      state.obstacles = state.obstacles.filter((o) => o.x + o.w > leftWorld);
-      state.coins = state.coins.filter((c) => !c.taken && c.x + c.r > leftWorld);
-      state.jumpPads = state.jumpPads.filter((p) => p.x + p.w > leftWorld);
-      state.pits = state.pits.filter((p) => p.x + p.w > leftWorld);
-
-      const playerRectWorld = { x: state.worldX + player.x, y: player.y, w: player.w, h: player.h };
-
-      for (const obstacle of state.obstacles) {
-        if (intersects(playerRectWorld, obstacle)) { gameOver(); break; }
-      }
-
-      for (const coin of state.coins) {
-        const coinRect = { x: coin.x - coin.r, y: coin.y - coin.r, w: coin.r * 2, h: coin.r * 2 };
-        if (intersects(playerRectWorld, coinRect)) {
-          coin.taken = true;
-          state.score += 10;
-        }
-      }
-
-      for (const pad of state.jumpPads) {
-        const overlapX = playerRectWorld.x + player.w > pad.x && playerRectWorld.x < pad.x + pad.w;
-        const touchingTop = player.vy >= 0 && (playerRectWorld.y + player.h) >= pad.y - 2 && (playerRectWorld.y + player.h) <= pad.y + 8;
-        if (overlapX && touchingTop) {
-          player.y = pad.y - player.h;
-          player.vy = 0;
-          player.onGround = true;
-          jump(state.boostJumpPower);
-          break;
-        }
-      }
-
-      scoreEl.textContent = String(Math.floor(state.score));
-      state.cloudsOffset += 0.8;
-    }
-
-    function drawBackground() {
-      ctx.fillStyle = '#eaf6ff';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#ffffff';
-      for (let i = 0; i < 5; i++) {
-        const x = (i * 220 - (state.cloudsOffset * 0.4) % 1100) + 80;
-        const y = 40 + (i % 3) * 36;
-        ctx.beginPath();
-        ctx.ellipse(x, y, 40, 20, 0, 0, Math.PI * 2);
-        ctx.ellipse(x + 26, y + 4, 34, 18, 0, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.fillStyle = '#a7d889';
-      ctx.fillRect(0, state.groundY, canvas.width, canvas.height - state.groundY);
-
-      for (const pit of state.pits) {
-        const sx = pit.x - state.worldX;
-        if (sx > canvas.width || sx + pit.w < 0) continue;
-        ctx.fillStyle = '#eaf6ff';
-        ctx.fillRect(sx, state.groundY, pit.w, canvas.height - state.groundY + 2);
-      }
-    }
-
-    function drawPlayer() {
-      const px = player.x;
-      const py = player.y;
-      const legSwing = player.onGround ? Math.sin(player.walk) * 5 : 0;
-      const armSwing = player.onGround ? Math.sin(player.walk + Math.PI) * 4 : 1;
-
-      ctx.strokeStyle = '#1f2937';
-      ctx.lineWidth = 4;
-      ctx.lineCap = 'round';
-
-      ctx.beginPath();
-      ctx.moveTo(px + 15, py + 22);
-      ctx.lineTo(px + 15 - armSwing, py + 36);
-      ctx.moveTo(px + 15, py + 22);
-      ctx.lineTo(px + 15 + armSwing, py + 36);
-      ctx.moveTo(px + 15, py + 42);
-      ctx.lineTo(px + 11 - legSwing, py + 60);
-      ctx.moveTo(px + 15, py + 42);
-      ctx.lineTo(px + 19 + legSwing, py + 60);
-      ctx.stroke();
-
-      ctx.fillStyle = '#2563eb';
-      ctx.fillRect(px + 10, py + 20, 10, 22);
-      ctx.fillStyle = '#f4c7a1';
-      ctx.beginPath();
-      ctx.arc(px + 15, py + 11, 9, 0, Math.PI * 2);
-      ctx.fill();
-    }
-
-    function drawObstacles() {
-      ctx.fillStyle = '#4e342e';
-      for (const o of state.obstacles) ctx.fillRect(o.x - state.worldX, o.y, o.w, o.h);
-
-      for (const pad of state.jumpPads) {
-        const sx = pad.x - state.worldX;
-        ctx.fillStyle = '#ef4444';
-        ctx.fillRect(sx, pad.y, pad.w, pad.h);
-        ctx.fillStyle = '#fecaca';
-        for (let i = 0; i < 4; i++) ctx.fillRect(sx + 4 + i * 10, pad.y - 4, 6, 4);
-      }
-
-      for (const coin of state.coins) {
-        const sx = coin.x - state.worldX;
-        ctx.fillStyle = '#facc15';
-        ctx.beginPath();
-        ctx.arc(sx, coin.y, coin.r, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-
-    function loop() {
-      update();
-      drawBackground();
-      drawPlayer();
-      drawObstacles();
-      requestAnimationFrame(loop);
-    }
-
+    prevBtn.addEventListener('click', () => move(-1));
+    nextBtn.addEventListener('click', () => move(1));
     window.addEventListener('keydown', (e) => {
-      if (['Space', 'ArrowUp', 'KeyW'].includes(e.code)) { e.preventDefault(); jump(); }
-      if (['ArrowLeft', 'KeyA'].includes(e.code)) state.input.left = true;
-      if (['ArrowRight', 'KeyD'].includes(e.code)) state.input.right = true;
-    }, { passive: false });
-
-    window.addEventListener('keyup', (e) => {
-      if (['ArrowLeft', 'KeyA'].includes(e.code)) state.input.left = false;
-      if (['ArrowRight', 'KeyD'].includes(e.code)) state.input.right = false;
+      if (e.key === 'ArrowRight') move(1);
+      if (e.key === 'ArrowLeft') move(-1);
     });
 
-    function bindHold(button, onDown, onUp) {
-      button.addEventListener('pointerdown', (e) => { e.preventDefault(); onDown(); });
-      button.addEventListener('pointerup', onUp);
-      button.addEventListener('pointerleave', onUp);
-      button.addEventListener('pointercancel', onUp);
-    }
-
-    canvas.addEventListener('pointerdown', jump);
-    jumpBtn.addEventListener('pointerdown', jump);
-    bindHold(leftBtn, () => state.input.left = true, () => state.input.left = false);
-    bindHold(rightBtn, () => state.input.right = true, () => state.input.right = false);
-    restartBtn.addEventListener('click', resetGame);
-
-    resetGame();
-    loop();
+    render();
   </script>
 </body>
 </html>
