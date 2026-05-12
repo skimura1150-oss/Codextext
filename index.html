@@ -11,7 +11,6 @@
       --ink: #1f2937;
       --sub: #4b5563;
       --accent: #1d4ed8;
-      --accent-soft: #dbeafe;
       --border: #d1d5db;
     }
     * { box-sizing: border-box; }
@@ -31,125 +30,81 @@
       border-bottom: 1px solid var(--border);
       backdrop-filter: blur(6px);
     }
-    .stage {
-      display: grid;
-      place-items: center;
-      padding: 18px;
-    }
-    .deck {
-      width: min(980px, 96vw);
-    }
+    .stage { display: grid; place-items: center; padding: 16px; }
+    .deck { width: min(980px, 96vw); }
     .slide {
       display: none;
       background: var(--card);
       border-radius: 18px;
       border: 1px solid var(--border);
       box-shadow: 0 14px 34px rgba(0,0,0,.12);
-      padding: 26px;
+      padding: clamp(14px, 3.5vw, 26px);
       min-height: 62vh;
     }
     .slide.active { display: block; }
-    h1 { margin: 0 0 12px; font-size: clamp(1.5rem, 3.5vw, 2.2rem); }
-    h2 { margin: 0 0 12px; font-size: clamp(1.3rem, 3vw, 1.9rem); color: var(--accent); }
-    p, li { line-height: 1.8; font-size: clamp(1rem, 1.9vw, 1.15rem); }
+    h1 { margin: 0 0 10px; font-size: clamp(1.4rem, 3.4vw, 2.1rem); }
+    h2 { margin: 0 0 10px; font-size: clamp(1.2rem, 3vw, 1.9rem); color: var(--accent); }
+    p, li { line-height: 1.75; font-size: clamp(1rem, 2.1vw, 1.14rem); }
     .narration {
       background: #f8fafc;
       border-left: 5px solid var(--accent);
-      padding: 12px 14px;
+      padding: 10px 13px;
       border-radius: 10px;
-      margin: 12px 0 16px;
+      margin: 10px 0 0;
     }
-    .idea {
-      margin-top: 12px;
-      background: var(--accent-soft);
-      border-radius: 12px;
-      padding: 12px 14px;
+    .illust {
+      margin: 2px 0 14px;
+      border: 1px solid #dbe3f7;
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f3f8ff, #e7f1ff);
     }
-    .idea h3 { margin: 0 0 8px; font-size: 1rem; }
+    .illust svg { width: 100%; height: auto; display: block; }
     .controls {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      padding: 12px 18px 18px;
-      flex-wrap: wrap;
+      display: flex; justify-content: center; align-items: center; gap: 10px;
+      padding: 12px 18px 18px; flex-wrap: wrap;
     }
     button {
-      border: 0;
-      border-radius: 999px;
-      padding: 11px 18px;
-      font-size: 1rem;
-      font-weight: 700;
-      cursor: pointer;
-      background: var(--accent);
-      color: #fff;
+      border: 0; border-radius: 999px; padding: 11px 18px; font-size: 1rem;
+      font-weight: 700; cursor: pointer; background: var(--accent); color: #fff;
     }
     button.secondary { background: #374151; }
-    .counter {
-      min-width: 120px;
-      text-align: center;
-      font-weight: 700;
-      color: var(--sub);
-    }
+    button:disabled { opacity: .45; cursor: default; }
+    .counter { min-width: 120px; text-align: center; font-weight: 700; color: var(--sub); }
     .keys { color: var(--sub); font-size: .92rem; }
   </style>
 </head>
 <body>
   <header>小学生向け歴史スライド：江戸時代誕生ストーリー</header>
-
   <main class="stage">
     <div class="deck" id="deck">
       <section class="slide active">
-        <h1>はじまりは、ひとりのねばり強い武将から！</h1>
-        <div class="narration"><p>むかし日本には、たくさんの大名が力をあらそっていた時代がありました。その中で、あきらめずにチャンスを待ちつづけた人物がいます。その名は――<strong>徳川家康</strong>！</p></div>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>朝日を背に立つ家康（やさしい表情）</li><li>日本地図の上に「戦国時代」と書かれた旗</li></ul></div>
+        <div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#d7ecff"/><circle cx="670" cy="75" r="42" fill="#ffd43b"/><path d="M0 285 Q180 210 340 265 T800 248 V360 H0Z" fill="#8dc27e"/><rect x="100" y="170" width="85" height="150" rx="35" fill="#6b7280"/><circle cx="142" cy="142" r="34" fill="#ffd9b3"/><path d="M112 135 q30 -35 60 0" stroke="#111827" stroke-width="8" fill="none"/><circle cx="130" cy="145" r="4"/><circle cx="154" cy="145" r="4"/><path d="M130 160 q12 12 24 0" stroke="#111827" stroke-width="3" fill="none"/><rect x="480" y="140" width="30" height="130" fill="#8b5a2b"/><path d="M510 140 L640 170 L510 200 Z" fill="#e11d48"/><text x="528" y="176" font-size="26" fill="white" font-weight="700">戦国</text><path d="M290 110 l30 18 -30 18" stroke="#1d4ed8" stroke-width="8" fill="none"/><path d="M320 128 h110" stroke="#1d4ed8" stroke-width="8"/><text x="360" y="95" font-size="32" fill="#1d4ed8" font-weight="700">徳川家康</text></svg></div>
+        <h1>はじまりは、ひとりのねばり強い武将から！</h1><div class="narration"><p>むかし日本には、たくさんの大名が力をあらそっていた時代がありました。その中で、あきらめずにチャンスを待ちつづけた人物がいます。その名は――<strong>徳川家康</strong>！</p></div>
       </section>
 
       <section class="slide">
-        <h2>子どものころから、がまんの毎日！</h2>
-        <div class="narration"><p>家康は小さいころ、ほかの大名のもとで人質としてくらしました。自由が少ない生活でも、家康は<strong>よく見て、よく学び、心を強く</strong>しました。「今は待つとき」と考えたのです。</p></div>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>小さな家康が障子のすき間から外を見ている</li><li>ノートに作戦を書きこむ家康</li></ul></div>
+        <div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#e8f2ff"/><rect x="70" y="80" width="300" height="220" rx="18" fill="#fef3c7"/><line x1="130" y1="80" x2="130" y2="300" stroke="#d97706"/><line x1="250" y1="80" x2="250" y2="300" stroke="#d97706"/><circle cx="510" cy="150" r="34" fill="#ffd9b3"/><rect x="472" y="183" width="75" height="120" rx="34" fill="#60a5fa"/><rect x="560" y="198" width="130" height="80" rx="10" fill="#fff" stroke="#1d4ed8"/><line x1="575" y1="220" x2="670" y2="220" stroke="#1d4ed8" stroke-width="4"/><line x1="575" y1="240" x2="655" y2="240" stroke="#1d4ed8" stroke-width="4"/><line x1="575" y1="260" x2="640" y2="260" stroke="#1d4ed8" stroke-width="4"/></svg></div>
+        <h2>子どものころから、がまんの毎日！</h2><div class="narration"><p>家康は小さいころ、ほかの大名のもとで人質としてくらしました。自由が少ない生活でも、家康は<strong>よく見て、よく学び、心を強く</strong>しました。「今は待つとき」と考えたのです。</p></div>
       </section>
 
       <section class="slide">
-        <h2>強いリーダーのそばで学ぶ！</h2>
-        <div class="narration"><p>戦国時代には、織田信長と豊臣秀吉という強いリーダーがいました。家康は、ときに戦い、ときに協力しながら、<strong>国をまとめる方法</strong>を学んでいきます。</p></div>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>信長・秀吉・家康の三人が並ぶ（歴史人物カード風）</li><li>パズルのピースがそろう演出</li></ul></div>
+        <div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#dbeafe"/><circle cx="220" cy="145" r="35" fill="#ffd9b3"/><circle cx="400" cy="145" r="35" fill="#ffd9b3"/><circle cx="580" cy="145" r="35" fill="#ffd9b3"/><rect x="182" y="180" width="76" height="118" rx="34" fill="#ef4444"/><rect x="362" y="180" width="76" height="118" rx="34" fill="#f59e0b"/><rect x="542" y="180" width="76" height="118" rx="34" fill="#3b82f6"/><path d="M290 240 L350 210 L410 240" stroke="#10b981" stroke-width="8" fill="none"/><path d="M390 240 L450 210 L510 240" stroke="#10b981" stroke-width="8" fill="none"/><text x="250" y="70" font-size="30" fill="#1d4ed8" font-weight="700">学んで成長！</text></svg></div>
+        <h2>強いリーダーのそばで学ぶ！</h2><div class="narration"><p>戦国時代には、織田信長と豊臣秀吉という強いリーダーがいました。家康は、ときに戦い、ときに協力しながら、<strong>国をまとめる方法</strong>を学んでいきます。</p></div>
       </section>
 
-      <section class="slide">
-        <h2>天下分け目の大勝負！（1600年）</h2>
-        <div class="narration"><p>1600年、関ヶ原で大きな戦いがおこります。家康は多くの味方をまとめ、作戦を立てて勝利しました。この勝利で、家康は日本でいちばん強い立場に近づきます。</p></div>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>霧の中で向かい合う二つの軍</li><li>地図上に矢印で作戦ルート</li></ul></div>
-      </section>
+      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#e2e8f0"/><rect y="230" width="800" height="130" fill="#94a3b8"/><path d="M60 240 l70 -70 l70 70" fill="#2563eb"/><path d="M600 240 l70 -70 l70 70" fill="#dc2626"/><rect x="370" y="80" width="60" height="180" fill="#8b5a2b"/><path d="M430 80 L540 115 L430 150 Z" fill="#16a34a"/><text x="439" y="120" font-size="24" fill="white">勝</text><text x="250" y="60" font-size="34" fill="#1f2937" font-weight="700">1600 関ヶ原</text></svg></div><h2>天下分け目の大勝負！（1600年）</h2><div class="narration"><p>1600年、関ヶ原で大きな戦いがおこります。家康は多くの味方をまとめ、作戦を立てて勝利しました。この勝利で、家康は日本でいちばん強い立場に近づきます。</p></div></section>
 
-      <section class="slide">
-        <h2>ついに「将軍」に！（1603年）</h2>
-        <div class="narration"><p>1603年、家康は朝廷から<strong>征夷大将軍</strong>に任命され、江戸（今の東京）に<strong>江戸幕府</strong>を開きました。ここから江戸時代がはじまります！</p></div>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>江戸城と「祝・江戸幕府」</li><li>将軍の衣装を着た家康</li></ul></div>
-      </section>
+      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#d9f99d"/><rect x="220" y="160" width="360" height="140" fill="#fef3c7" stroke="#92400e" stroke-width="4"/><rect x="270" y="105" width="260" height="80" fill="#b45309"/><rect x="330" y="60" width="140" height="50" fill="#92400e"/><circle cx="120" cy="210" r="34" fill="#ffd9b3"/><rect x="90" y="245" width="60" height="70" rx="24" fill="#1d4ed8"/><text x="290" y="45" font-size="36" fill="#b91c1c" font-weight="700">1603 将軍！</text></svg></div><h2>ついに「将軍」に！（1603年）</h2><div class="narration"><p>1603年、家康は朝廷から<strong>征夷大将軍</strong>に任命され、江戸（今の東京）に<strong>江戸幕府</strong>を開きました。ここから江戸時代がはじまります！</p></div></section>
 
-      <section class="slide">
-        <h2>なぜ江戸にしたの？</h2>
-        <div class="narration"><p>江戸は当時、今ほど大きな町ではありませんでした。家康は川や道を整え、全国とつながる便利な中心地に育てました。江戸はどんどん発展し、たくさんの人が集まる町になります。</p></div>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>「むかしの江戸」→「にぎやかな江戸」ビフォーアフター</li><li>橋・船・商人でにぎわう町</li></ul></div>
-      </section>
+      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#bae6fd"/><path d="M0 250 C130 220 220 270 330 240 C450 205 530 265 800 230 V360 H0Z" fill="#60a5fa"/><rect x="90" y="170" width="120" height="70" fill="#f59e0b"/><rect x="250" y="150" width="120" height="90" fill="#ef4444"/><rect x="410" y="160" width="120" height="80" fill="#22c55e"/><rect x="570" y="145" width="120" height="95" fill="#a855f7"/><path d="M210 205 H250 M370 205 H410 M530 205 H570" stroke="#334155" stroke-width="8"/><rect x="640" y="250" width="95" height="30" rx="15" fill="#7c3aed"/><circle cx="662" cy="250" r="12" fill="#fde68a"/><text x="55" y="55" font-size="30" fill="#1d4ed8" font-weight="700">町がどんどん発展！</text></svg></div><h2>なぜ江戸にしたの？</h2><div class="narration"><p>江戸は当時、今ほど大きな町ではありませんでした。家康は川や道を整え、全国とつながる便利な中心地に育てました。江戸はどんどん発展し、たくさんの人が集まる町になります。</p></div></section>
 
-      <section class="slide">
-        <h2>戦いをへらすしくみを作った！</h2>
-        <div class="narration"><p>家康と徳川の将軍たちは、大名が勝手に戦いをおこしにくいように、ルールや仕組みを整えました。その結果、江戸時代には長い平和が続き、文化や学問が広がりました。</p></div>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>ルールブックを持つ役人</li><li>花火や歌舞伎、寺子屋の風景</li></ul></div>
-      </section>
+      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#e0f2fe"/><rect x="120" y="120" width="180" height="180" rx="12" fill="#fff" stroke="#1d4ed8" stroke-width="4"/><line x1="150" y1="170" x2="270" y2="170" stroke="#1d4ed8" stroke-width="6"/><line x1="150" y1="210" x2="250" y2="210" stroke="#1d4ed8" stroke-width="6"/><line x1="150" y1="250" x2="235" y2="250" stroke="#1d4ed8" stroke-width="6"/><circle cx="420" cy="180" r="35" fill="#ffd9b3"/><rect x="385" y="215" width="70" height="95" rx="30" fill="#3b82f6"/><circle cx="600" cy="220" r="45" fill="#fb7185"/><path d="M560 220 h80" stroke="white" stroke-width="8"/><path d="M600 180 v80" stroke="white" stroke-width="8"/><text x="310" y="60" font-size="30" fill="#0f766e" font-weight="700">ルールで平和に</text></svg></div><h2>戦いをへらすしくみを作った！</h2><div class="narration"><p>家康と徳川の将軍たちは、大名が勝手に戦いをおこしにくいように、ルールや仕組みを整えました。その結果、江戸時代には長い平和が続き、文化や学問が広がりました。</p></div></section>
 
-      <section class="slide">
+      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#dbeafe"/><circle cx="180" cy="160" r="65" fill="#fef08a"/><circle cx="400" cy="160" r="65" fill="#86efac"/><circle cx="620" cy="160" r="65" fill="#93c5fd"/><text x="145" y="168" font-size="34" font-weight="700" fill="#854d0e">がまん</text><text x="355" y="168" font-size="32" font-weight="700" fill="#166534">まとめる</text><text x="588" y="168" font-size="32" font-weight="700" fill="#1e3a8a">先読み</text><rect x="280" y="250" width="240" height="78" rx="34" fill="#f97316"/><text x="322" y="299" font-size="34" font-weight="700" fill="white">江戸幕府</text></svg></div>
         <h2>まとめ：家康が江戸幕府を作れた3つの理由</h2>
-        <ol>
-          <li><strong>がまん強く待てたこと</strong>（あわてなかった）</li>
-          <li><strong>人をまとめる力</strong>（味方を増やした）</li>
-          <li><strong>先を読む力</strong>（江戸を選び、しくみを作った）</li>
-        </ol>
+        <ol><li><strong>がまん強く待てたこと</strong>（あわてなかった）</li><li><strong>人をまとめる力</strong>（味方を増やした）</li><li><strong>先を読む力</strong>（江戸を選び、しくみを作った）</li></ol>
         <p class="narration">だからこそ、家康は江戸幕府を誕生させることができたのです。</p>
-        <div class="idea"><h3>絵のアイデア</h3><ul><li>3つのカギ（がまん・まとめる・先読み）</li><li>最後に笑顔の家康とにぎやかな江戸の町</li></ul></div>
       </section>
     </div>
   </main>
@@ -167,28 +122,24 @@
     const prevBtn = document.getElementById('prevBtn');
     const nextBtn = document.getElementById('nextBtn');
     let current = 0;
-
     function render() {
       slides.forEach((s, i) => s.classList.toggle('active', i === current));
       counter.textContent = `${current + 1} / ${slides.length}`;
       prevBtn.disabled = current === 0;
       nextBtn.disabled = current === slides.length - 1;
     }
-
     function move(delta) {
       const next = current + delta;
       if (next < 0 || next >= slides.length) return;
       current = next;
       render();
     }
-
     prevBtn.addEventListener('click', () => move(-1));
     nextBtn.addEventListener('click', () => move(1));
     window.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowRight') move(1);
       if (e.key === 'ArrowLeft') move(-1);
     });
-
     render();
   </script>
 </body>
