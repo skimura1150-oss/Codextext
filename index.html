@@ -3,144 +3,191 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>江戸時代誕生 物語スライド</title>
+  <title>我孫子東邦病院 リハビリテーション科｜7枚スライド台本</title>
   <style>
     :root {
-      --bg: #f4f8ff;
+      --bg: #f5f7fb;
       --card: #ffffff;
-      --ink: #1f2937;
-      --sub: #4b5563;
+      --text: #1f2937;
+      --muted: #6b7280;
       --accent: #1d4ed8;
-      --border: #d1d5db;
+      --line: #dbe3f0;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: "Hiragino Kaku Gothic ProN", "Yu Gothic", "Meiryo", sans-serif;
-      background: radial-gradient(circle at top, #e0ecff, var(--bg));
-      color: var(--ink);
-      min-height: 100vh;
-      display: grid;
-      grid-template-rows: auto 1fr auto;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.8;
     }
     header {
-      padding: 14px 18px;
-      font-weight: 700;
-      background: rgba(255,255,255,.85);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(6px);
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      color: #fff;
+      padding: 32px 20px;
+      text-align: center;
     }
-    .stage { display: grid; place-items: center; padding: 16px; }
-    .deck { width: min(980px, 96vw); }
-    .slide {
-      display: none;
-      background: var(--card);
-      border-radius: 18px;
-      border: 1px solid var(--border);
-      box-shadow: 0 14px 34px rgba(0,0,0,.12);
-      padding: clamp(14px, 3.5vw, 26px);
-      min-height: 62vh;
+    header h1 {
+      margin: 0;
+      font-size: 1.8rem;
     }
-    .slide.active { display: block; }
-    h1 { margin: 0 0 10px; font-size: clamp(1.4rem, 3.4vw, 2.1rem); }
-    h2 { margin: 0 0 10px; font-size: clamp(1.2rem, 3vw, 1.9rem); color: var(--accent); }
-    p, li { line-height: 1.75; font-size: clamp(1rem, 2.1vw, 1.14rem); }
-    .narration {
-      background: #f8fafc;
-      border-left: 5px solid var(--accent);
-      padding: 10px 13px;
-      border-radius: 10px;
+    header p {
       margin: 10px 0 0;
+      opacity: 0.95;
+      font-size: 0.98rem;
     }
-    .illust {
-      margin: 2px 0 14px;
-      border: 1px solid #dbe3f7;
+    main {
+      max-width: 980px;
+      margin: 28px auto 48px;
+      padding: 0 16px;
+    }
+    .slide {
+      background: var(--card);
+      border: 1px solid var(--line);
       border-radius: 14px;
-      overflow: hidden;
-      background: linear-gradient(180deg, #f3f8ff, #e7f1ff);
+      padding: 22px 20px;
+      margin-bottom: 18px;
+      box-shadow: 0 2px 8px rgba(20, 30, 60, 0.04);
     }
-    .illust svg { width: 100%; height: auto; display: block; }
-    .controls {
-      display: flex; justify-content: center; align-items: center; gap: 10px;
-      padding: 12px 18px 18px; flex-wrap: wrap;
+    .slide h2 {
+      margin: 0 0 14px;
+      font-size: 1.25rem;
+      color: var(--accent);
+      border-left: 5px solid var(--accent);
+      padding-left: 10px;
     }
-    button {
-      border: 0; border-radius: 999px; padding: 11px 18px; font-size: 1rem;
-      font-weight: 700; cursor: pointer; background: var(--accent); color: #fff;
+    .slide h3 {
+      margin: 14px 0 8px;
+      font-size: 1rem;
     }
-    button.secondary { background: #374151; }
-    button:disabled { opacity: .45; cursor: default; }
-    .counter { min-width: 120px; text-align: center; font-weight: 700; color: var(--sub); }
-    .keys { color: var(--sub); font-size: .92rem; }
+    ul { margin: 0; padding-left: 1.2rem; }
+    .point {
+      margin-top: 12px;
+      padding: 10px 12px;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      border-radius: 8px;
+      color: #1e3a8a;
+      font-size: 0.95rem;
+    }
+    .note {
+      color: var(--muted);
+      font-size: 0.92rem;
+      margin-top: 8px;
+    }
+    footer {
+      max-width: 980px;
+      margin: 0 auto 40px;
+      padding: 0 16px;
+    }
+    .sources {
+      background: #fff;
+      border: 1px dashed #b8c6dd;
+      border-radius: 12px;
+      padding: 16px;
+      font-size: 0.95rem;
+    }
+    a { color: #1d4ed8; }
   </style>
 </head>
 <body>
-  <header>小学生向け歴史スライド：江戸時代誕生ストーリー</header>
-  <main class="stage">
-    <div class="deck" id="deck">
-      <section class="slide active">
-        <div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#d7ecff"/><circle cx="670" cy="75" r="42" fill="#ffd43b"/><path d="M0 285 Q180 210 340 265 T800 248 V360 H0Z" fill="#8dc27e"/><rect x="100" y="170" width="85" height="150" rx="35" fill="#6b7280"/><circle cx="142" cy="142" r="34" fill="#ffd9b3"/><path d="M112 135 q30 -35 60 0" stroke="#111827" stroke-width="8" fill="none"/><circle cx="130" cy="145" r="4"/><circle cx="154" cy="145" r="4"/><path d="M130 160 q12 12 24 0" stroke="#111827" stroke-width="3" fill="none"/><rect x="480" y="140" width="30" height="130" fill="#8b5a2b"/><path d="M510 140 L640 170 L510 200 Z" fill="#e11d48"/><text x="528" y="176" font-size="26" fill="white" font-weight="700">戦国</text><path d="M290 110 l30 18 -30 18" stroke="#1d4ed8" stroke-width="8" fill="none"/><path d="M320 128 h110" stroke="#1d4ed8" stroke-width="8"/><text x="360" y="95" font-size="32" fill="#1d4ed8" font-weight="700">徳川家康</text></svg></div>
-        <h1>はじまりは、ひとりのねばり強い武将から！</h1><div class="narration"><p>むかし日本には、たくさんの大名が力をあらそっていた時代がありました。その中で、あきらめずにチャンスを待ちつづけた人物がいます。その名は――<strong>徳川家康</strong>！</p></div>
-      </section>
+  <header>
+    <h1>我孫子東邦病院 リハビリテーション科の特色・強み・実績</h1>
+    <p>7枚スライド台本（2026年5月時点の公開情報ベース）</p>
+  </header>
 
-      <section class="slide">
-        <div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#e8f2ff"/><rect x="70" y="80" width="300" height="220" rx="18" fill="#fef3c7"/><line x1="130" y1="80" x2="130" y2="300" stroke="#d97706"/><line x1="250" y1="80" x2="250" y2="300" stroke="#d97706"/><circle cx="510" cy="150" r="34" fill="#ffd9b3"/><rect x="472" y="183" width="75" height="120" rx="34" fill="#60a5fa"/><rect x="560" y="198" width="130" height="80" rx="10" fill="#fff" stroke="#1d4ed8"/><line x1="575" y1="220" x2="670" y2="220" stroke="#1d4ed8" stroke-width="4"/><line x1="575" y1="240" x2="655" y2="240" stroke="#1d4ed8" stroke-width="4"/><line x1="575" y1="260" x2="640" y2="260" stroke="#1d4ed8" stroke-width="4"/></svg></div>
-        <h2>子どものころから、がまんの毎日！</h2><div class="narration"><p>家康は小さいころ、ほかの大名のもとで人質としてくらしました。自由が少ない生活でも、家康は<strong>よく見て、よく学び、心を強く</strong>しました。「今は待つとき」と考えたのです。</p></div>
-      </section>
+  <main>
+    <section class="slide" id="slide1">
+      <h2>スライド1｜表紙</h2>
+      <ul>
+        <li><strong>タイトル：</strong>我孫子東邦病院 リハビリテーション科の特色・強み・実績</li>
+        <li><strong>サブタイトル：</strong>地域急性期病院における機能回復支援の実際（2026年5月時点公開情報ベース）</li>
+        <li><strong>発表者情報：</strong>氏名／所属／日付</li>
+      </ul>
+    </section>
 
-      <section class="slide">
-        <div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#dbeafe"/><circle cx="220" cy="145" r="35" fill="#ffd9b3"/><circle cx="400" cy="145" r="35" fill="#ffd9b3"/><circle cx="580" cy="145" r="35" fill="#ffd9b3"/><rect x="182" y="180" width="76" height="118" rx="34" fill="#ef4444"/><rect x="362" y="180" width="76" height="118" rx="34" fill="#f59e0b"/><rect x="542" y="180" width="76" height="118" rx="34" fill="#3b82f6"/><path d="M290 240 L350 210 L410 240" stroke="#10b981" stroke-width="8" fill="none"/><path d="M390 240 L450 210 L510 240" stroke="#10b981" stroke-width="8" fill="none"/><text x="250" y="70" font-size="30" fill="#1d4ed8" font-weight="700">学んで成長！</text></svg></div>
-        <h2>強いリーダーのそばで学ぶ！</h2><div class="narration"><p>戦国時代には、織田信長と豊臣秀吉という強いリーダーがいました。家康は、ときに戦い、ときに協力しながら、<strong>国をまとめる方法</strong>を学んでいきます。</p></div>
-      </section>
+    <section class="slide" id="slide2">
+      <h2>スライド2｜病院・診療体制の全体像（リハ科の位置づけ）</h2>
+      <ul>
+        <li>我孫子東邦病院は千葉県我孫子市の<strong>100床（一般病棟）</strong>の病院。</li>
+        <li>診療科としてリハビリテーション科を設置し、急性期医療の中でリハ介入を実施。</li>
+        <li>施設基準として、脳血管疾患等リハビリテーション料（Ⅲ）、運動器リハビリテーション料（Ⅰ）、がん患者リハビリテーション科を掲げる。</li>
+        <li>救急対応・複数診療科を持つ体制の中で、術後や内部障害を含むリハニーズに対応しやすい構造。</li>
+      </ul>
+      <div class="point">話すポイント：「単科リハ施設ではなく、急性期病院の中で多診療科連携しやすい点」が土台。</div>
+    </section>
 
-      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#e2e8f0"/><rect y="230" width="800" height="130" fill="#94a3b8"/><path d="M60 240 l70 -70 l70 70" fill="#2563eb"/><path d="M600 240 l70 -70 l70 70" fill="#dc2626"/><rect x="370" y="80" width="60" height="180" fill="#8b5a2b"/><path d="M430 80 L540 115 L430 150 Z" fill="#16a34a"/><text x="439" y="120" font-size="24" fill="white">勝</text><text x="250" y="60" font-size="34" fill="#1f2937" font-weight="700">1600 関ヶ原</text></svg></div><h2>天下分け目の大勝負！（1600年）</h2><div class="narration"><p>1600年、関ヶ原で大きな戦いがおこります。家康は多くの味方をまとめ、作戦を立てて勝利しました。この勝利で、家康は日本でいちばん強い立場に近づきます。</p></div></section>
+    <section class="slide" id="slide3">
+      <h2>スライド3｜リハビリ対象と基本方針</h2>
+      <ul>
+        <li>対象は、脳血管障害、整形外科疾患（腰痛・頚部痛・関節疾患）、外科・整形外科術後、スポーツ外傷、長期臥位に伴う廃用症候群など幅広い。</li>
+        <li>方針は、発症・受傷後できるだけ早期に開始し、機能回復だけでなく再発予防・生活指導まで含めること。</li>
+        <li>痛みや日常生活上の困難を軽減し、生活の質向上を目指す。</li>
+      </ul>
+      <div class="point">話すポイント：「治療→改善→再発予防」まで見据える流れを明確に示す。</div>
+    </section>
 
-      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#d9f99d"/><rect x="220" y="160" width="360" height="140" fill="#fef3c7" stroke="#92400e" stroke-width="4"/><rect x="270" y="105" width="260" height="80" fill="#b45309"/><rect x="330" y="60" width="140" height="50" fill="#92400e"/><circle cx="120" cy="210" r="34" fill="#ffd9b3"/><rect x="90" y="245" width="60" height="70" rx="24" fill="#1d4ed8"/><text x="290" y="45" font-size="36" fill="#b91c1c" font-weight="700">1603 将軍！</text></svg></div><h2>ついに「将軍」に！（1603年）</h2><div class="narration"><p>1603年、家康は朝廷から<strong>征夷大将軍</strong>に任命され、江戸（今の東京）に<strong>江戸幕府</strong>を開きました。ここから江戸時代がはじまります！</p></div></section>
+    <section class="slide" id="slide4">
+      <h2>スライド4｜我孫子東邦病院リハの特色（売り）</h2>
+      <ul>
+        <li>医師指示下で、運動器Ⅰ・脳血管Ⅲの基準で実施。</li>
+        <li>物理療法だけでなく、徒手療法による鎮痛・機能改善＋生活/トレーニング指導を実践。</li>
+        <li>透析患者・糖尿病患者への運動療法、尿失禁への骨盤底筋群トレーニング、排便・排尿コントロール訓練まで対応。</li>
+        <li>ロボット支援前立腺手術（ダヴィンチ）前後の骨盤底筋指導を理学療法士が担当。</li>
+        <li>ゴルフ外来（2017年10月開始）に関連した機能評価・治療にも対応。</li>
+      </ul>
+      <div class="point">話すポイント：一般的な整形リハだけでなく、泌尿器・透析と接続した専門性が差別化ポイント。</div>
+    </section>
 
-      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#bae6fd"/><path d="M0 250 C130 220 220 270 330 240 C450 205 530 265 800 230 V360 H0Z" fill="#60a5fa"/><rect x="90" y="170" width="120" height="70" fill="#f59e0b"/><rect x="250" y="150" width="120" height="90" fill="#ef4444"/><rect x="410" y="160" width="120" height="80" fill="#22c55e"/><rect x="570" y="145" width="120" height="95" fill="#a855f7"/><path d="M210 205 H250 M370 205 H410 M530 205 H570" stroke="#334155" stroke-width="8"/><rect x="640" y="250" width="95" height="30" rx="15" fill="#7c3aed"/><circle cx="662" cy="250" r="12" fill="#fde68a"/><text x="55" y="55" font-size="30" fill="#1d4ed8" font-weight="700">町がどんどん発展！</text></svg></div><h2>なぜ江戸にしたの？</h2><div class="narration"><p>江戸は当時、今ほど大きな町ではありませんでした。家康は川や道を整え、全国とつながる便利な中心地に育てました。江戸はどんどん発展し、たくさんの人が集まる町になります。</p></div></section>
+    <section class="slide" id="slide5">
+      <h2>スライド5｜人的体制・運用（患者導線）</h2>
+      <ul>
+        <li>リハビリテーション科スタッフは公開ページ上、<strong>理学療法士（PT）5名</strong>。</li>
+        <li>入院・外来双方を担当。</li>
+        <li>外来は「初回医師診察 → 指示箋発行 → PT評価 → 治療計画立案・開始 → 2回目以降予約制」の流れ。</li>
+        <li>日曜は予約外来のみ（担当交代制）。</li>
+      </ul>
+      <div class="point">話すポイント：リハの質は「処方→評価→計画→実施」の運用設計で支えられている。</div>
+    </section>
 
-      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#e0f2fe"/><rect x="120" y="120" width="180" height="180" rx="12" fill="#fff" stroke="#1d4ed8" stroke-width="4"/><line x1="150" y1="170" x2="270" y2="170" stroke="#1d4ed8" stroke-width="6"/><line x1="150" y1="210" x2="250" y2="210" stroke="#1d4ed8" stroke-width="6"/><line x1="150" y1="250" x2="235" y2="250" stroke="#1d4ed8" stroke-width="6"/><circle cx="420" cy="180" r="35" fill="#ffd9b3"/><rect x="385" y="215" width="70" height="95" rx="30" fill="#3b82f6"/><circle cx="600" cy="220" r="45" fill="#fb7185"/><path d="M560 220 h80" stroke="white" stroke-width="8"/><path d="M600 180 v80" stroke="white" stroke-width="8"/><text x="310" y="60" font-size="30" fill="#0f766e" font-weight="700">ルールで平和に</text></svg></div><h2>戦いをへらすしくみを作った！</h2><div class="narration"><p>家康と徳川の将軍たちは、大名が勝手に戦いをおこしにくいように、ルールや仕組みを整えました。その結果、江戸時代には長い平和が続き、文化や学問が広がりました。</p></div></section>
+    <section class="slide" id="slide6">
+      <h2>スライド6｜実績として示せる内容（公開情報ベース）</h2>
+      <p class="note">※病院が公表している件数実績は限定的なため、確認可能な実績性情報を整理。</p>
+      <ul>
+        <li>病院として運動器リハ（Ⅰ）/脳血管等リハ（Ⅲ）などの施設基準を取得・維持。</li>
+        <li>透析・泌尿器領域と連動したリハ（骨盤底筋訓練、排泄コントロール訓練等）を実施していることを明示。</li>
+        <li>2017年開始のゴルフ外来連携など、運動機能評価の専門性を対外提示。</li>
+        <li>サイト上で「病院の実力2026総合編に掲載」の案内あり。</li>
+      </ul>
+      <div class="point">補足：症例数・改善率・在院日数短縮率などの定量KPIは、院内資料があればさらに強化可能。</div>
+    </section>
 
-      <section class="slide"><div class="illust"><svg viewBox="0 0 800 360"><rect width="800" height="360" fill="#dbeafe"/><circle cx="180" cy="160" r="65" fill="#fef08a"/><circle cx="400" cy="160" r="65" fill="#86efac"/><circle cx="620" cy="160" r="65" fill="#93c5fd"/><text x="145" y="168" font-size="34" font-weight="700" fill="#854d0e">がまん</text><text x="355" y="168" font-size="32" font-weight="700" fill="#166534">まとめる</text><text x="588" y="168" font-size="32" font-weight="700" fill="#1e3a8a">先読み</text><rect x="280" y="250" width="240" height="78" rx="34" fill="#f97316"/><text x="322" y="299" font-size="34" font-weight="700" fill="white">江戸幕府</text></svg></div>
-        <h2>まとめ：家康が江戸幕府を作れた3つの理由</h2>
-        <ol><li><strong>がまん強く待てたこと</strong>（あわてなかった）</li><li><strong>人をまとめる力</strong>（味方を増やした）</li><li><strong>先を読む力</strong>（江戸を選び、しくみを作った）</li></ol>
-        <p class="narration">だからこそ、家康は江戸幕府を誕生させることができたのです。</p>
-      </section>
-    </div>
+    <section class="slide" id="slide7">
+      <h2>スライド7｜まとめ＆提案（プレゼン締め）</h2>
+      <h3>まとめ</h3>
+      <ul>
+        <li>強みは、①急性期病院内の多診療科連携、②運動器・脳血管を軸にした標準的リハ、③泌尿器・透析領域と接続した専門的介入。</li>
+        <li>骨盤底筋訓練や術前後介入、ゴルフ外来連携は「売り」として訴求しやすい。</li>
+      </ul>
+      <h3>次アクション（資料改善案）</h3>
+      <ul>
+        <li>院内から追加収集したいデータ：年間リハ件数（入院/外来別）、疾患別構成比、ADL/FIM改善、疼痛スコア改善、術後早期離床率、再入院率。</li>
+        <li>定量データを追加すれば、経営層・地域連携先向けにも説得力が高まる。</li>
+      </ul>
+    </section>
   </main>
 
-  <div class="controls">
-    <button class="secondary" id="prevBtn">← 前へ</button>
-    <div id="counter" class="counter">1 / 8</div>
-    <button id="nextBtn">次へ →</button>
-    <div class="keys">キーボード: ← → キーでも操作できます</div>
-  </div>
-
-  <script>
-    const slides = [...document.querySelectorAll('.slide')];
-    const counter = document.getElementById('counter');
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    let current = 0;
-    function render() {
-      slides.forEach((s, i) => s.classList.toggle('active', i === current));
-      counter.textContent = `${current + 1} / ${slides.length}`;
-      prevBtn.disabled = current === 0;
-      nextBtn.disabled = current === slides.length - 1;
-    }
-    function move(delta) {
-      const next = current + delta;
-      if (next < 0 || next >= slides.length) return;
-      current = next;
-      render();
-    }
-    prevBtn.addEventListener('click', () => move(-1));
-    nextBtn.addEventListener('click', () => move(1));
-    window.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight') move(1);
-      if (e.key === 'ArrowLeft') move(-1);
-    });
-    render();
-  </script>
+  <footer>
+    <div class="sources">
+      <strong>参考URL</strong>
+      <ul>
+        <li><a href="https://www.abikotoho.org/rehabilitation-medicine/">https://www.abikotoho.org/rehabilitation-medicine/</a></li>
+        <li><a href="https://www.abikotoho.org/overview/">https://www.abikotoho.org/overview/</a></li>
+        <li><a href="https://www.abikotoho.org/category/medical-support/">https://www.abikotoho.org/category/medical-support/</a></li>
+        <li><a href="https://www.abikotoho.org/riha/">https://www.abikotoho.org/riha/</a></li>
+        <li><a href="https://www.abikotoho.org/">https://www.abikotoho.org/</a></li>
+      </ul>
+    </div>
+  </footer>
 </body>
 </html>
