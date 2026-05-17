@@ -3,177 +3,257 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>我孫子東邦病院 リハビリテーション科｜7枚スライド台本</title>
+  <title>我孫子東邦病院 リハビリテーション科｜患者さんに寄り添う7枚スライド</title>
   <style>
     :root {
-      --bg: #f5f7fb;
+      --bg: #f3f8ff;
       --card: #ffffff;
-      --text: #1f2937;
-      --muted: #6b7280;
-      --accent: #1d4ed8;
-      --line: #dbe3f0;
+      --text: #1f2a37;
+      --muted: #5f6f83;
+      --primary: #2563eb;
+      --primary-soft: #e8f1ff;
+      --accent: #7ec8b6;
+      --warm: #fff7ed;
+      --line: #d7e4f5;
     }
     * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
       margin: 0;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Kaku Gothic ProN", "Yu Gothic", "Noto Sans JP", sans-serif;
       color: var(--text);
-      background: var(--bg);
-      line-height: 1.8;
+      background: linear-gradient(180deg, #f8fbff 0%, #eef5ff 100%);
+      line-height: 1.75;
     }
     header {
-      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      background: linear-gradient(135deg, #2f6eea, #4f84eb 55%, #5f98ee);
       color: #fff;
       padding: 32px 20px;
       text-align: center;
+      box-shadow: 0 8px 24px rgba(37, 99, 235, 0.2);
     }
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-    }
-    header p {
-      margin: 10px 0 0;
-      opacity: 0.95;
-      font-size: 0.98rem;
-    }
+    header h1 { margin: 0; font-size: 1.85rem; letter-spacing: 0.02em; }
+    header p { margin: 10px 0 0; opacity: 0.95; font-size: 1rem; }
+
     main {
-      max-width: 980px;
-      margin: 28px auto 48px;
-      padding: 0 16px;
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 10px 14px 36px;
     }
+
     .slide {
+      min-height: calc(100vh - 56px);
+      margin: 12px 0;
       background: var(--card);
       border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 22px 20px;
-      margin-bottom: 18px;
-      box-shadow: 0 2px 8px rgba(20, 30, 60, 0.04);
+      border-radius: 18px;
+      box-shadow: 0 8px 24px rgba(20, 30, 60, 0.08);
+      padding: 26px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    .slide-head {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .badge {
+      background: var(--primary-soft);
+      color: var(--primary);
+      border: 1px solid #cfe0ff;
+      border-radius: 99px;
+      padding: 4px 10px;
+      font-size: 0.85rem;
+      font-weight: 600;
     }
     .slide h2 {
-      margin: 0 0 14px;
-      font-size: 1.25rem;
-      color: var(--accent);
-      border-left: 5px solid var(--accent);
-      padding-left: 10px;
+      margin: 0;
+      font-size: 1.35rem;
+      color: var(--primary);
     }
-    .slide h3 {
-      margin: 14px 0 8px;
-      font-size: 1rem;
+
+    .layout-2 {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      align-items: start;
     }
-    ul { margin: 0; padding-left: 1.2rem; }
+
+    ul { margin: 0; padding-left: 1.15rem; }
+    li { margin-bottom: 6px; }
+
     .point {
       margin-top: 12px;
-      padding: 10px 12px;
-      background: #eff6ff;
-      border: 1px solid #bfdbfe;
-      border-radius: 8px;
-      color: #1e3a8a;
+      padding: 12px 14px;
+      background: linear-gradient(145deg, #f0f7ff, #eefbfa);
+      border: 1px solid #cae3ff;
+      border-left: 5px solid var(--accent);
+      border-radius: 10px;
+      color: #274160;
       font-size: 0.95rem;
     }
+
     .note {
       color: var(--muted);
-      font-size: 0.92rem;
+      font-size: 0.93rem;
       margin-top: 8px;
     }
+
+    .visual {
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid #d5e4f7;
+      background: #f8fbff;
+    }
+    .visual img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      display: block;
+    }
+    .caption {
+      padding: 8px 10px;
+      font-size: 0.86rem;
+      color: #4e617a;
+      background: #f8fbff;
+    }
+
+    .message {
+      margin-top: 16px;
+      background: var(--warm);
+      border: 1px solid #ffd9b3;
+      border-radius: 10px;
+      padding: 10px 12px;
+      color: #7a4b1f;
+      font-size: 0.95rem;
+    }
+
     footer {
-      max-width: 980px;
-      margin: 0 auto 40px;
-      padding: 0 16px;
+      max-width: 1120px;
+      margin: 0 auto 42px;
+      padding: 0 14px;
     }
     .sources {
       background: #fff;
-      border: 1px dashed #b8c6dd;
+      border: 1px dashed #b8cbe6;
       border-radius: 12px;
-      padding: 16px;
+      padding: 14px;
       font-size: 0.95rem;
     }
     a { color: #1d4ed8; }
+
+    @media (max-width: 900px) {
+      .slide { min-height: auto; }
+      .layout-2 { grid-template-columns: 1fr; }
+      .visual img { height: 200px; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>我孫子東邦病院 リハビリテーション科の特色・強み・実績</h1>
-    <p>7枚スライド台本（2026年5月時点の公開情報ベース）</p>
+    <h1>我孫子東邦病院 リハビリテーション科</h1>
+    <p>患者さん一人ひとりに寄り添う、安心と回復を支える7枚スライド（2026年5月時点）</p>
   </header>
 
   <main>
     <section class="slide" id="slide1">
-      <h2>スライド1｜表紙</h2>
-      <ul>
-        <li><strong>タイトル：</strong>我孫子東邦病院 リハビリテーション科の特色・強み・実績</li>
-        <li><strong>サブタイトル：</strong>地域急性期病院における機能回復支援の実際（2026年5月時点公開情報ベース）</li>
-        <li><strong>発表者情報：</strong>氏名／所属／日付</li>
-      </ul>
+      <div class="slide-head"><span class="badge">Slide 1</span><h2>表紙</h2></div>
+      <div class="layout-2">
+        <div>
+          <ul>
+            <li><strong>タイトル：</strong>我孫子東邦病院 リハビリテーション科の特色・強み・実績</li>
+            <li><strong>サブタイトル：</strong>患者さんとご家族に安心いただける、丁寧な機能回復支援</li>
+            <li><strong>発表者情報：</strong>氏名／所属／日付</li>
+          </ul>
+          <div class="message">「ここなら安心して相談できる」と感じていただけるよう、専門性とあたたかさの両立を大切にしています。</div>
+        </div>
+        <figure class="visual">
+          <img src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1200&q=80" alt="病院でリハビリをサポートする医療スタッフ" />
+          <figcaption class="caption">スタッフがそばで支える、安心感のあるリハビリのイメージ</figcaption>
+        </figure>
+      </div>
     </section>
 
     <section class="slide" id="slide2">
-      <h2>スライド2｜病院・診療体制の全体像（リハ科の位置づけ）</h2>
+      <div class="slide-head"><span class="badge">Slide 2</span><h2>病院・診療体制の全体像</h2></div>
       <ul>
-        <li>我孫子東邦病院は千葉県我孫子市の<strong>100床（一般病棟）</strong>の病院。</li>
-        <li>診療科としてリハビリテーション科を設置し、急性期医療の中でリハ介入を実施。</li>
-        <li>施設基準として、脳血管疾患等リハビリテーション料（Ⅲ）、運動器リハビリテーション料（Ⅰ）、がん患者リハビリテーション科を掲げる。</li>
-        <li>救急対応・複数診療科を持つ体制の中で、術後や内部障害を含むリハニーズに対応しやすい構造。</li>
+        <li>我孫子東邦病院は、千葉県我孫子市にある<strong>100床（一般病棟）</strong>の病院です。</li>
+        <li>リハビリテーション科は、急性期医療のなかで早期から介入し、回復の土台づくりを支えます。</li>
+        <li>脳血管疾患等リハビリテーション料（Ⅲ）、運動器リハビリテーション料（Ⅰ）などの基準に沿って実施しています。</li>
+        <li>複数診療科との連携により、術後や内部障害を含む幅広いニーズに丁寧に対応します。</li>
       </ul>
-      <div class="point">話すポイント：「単科リハ施設ではなく、急性期病院の中で多診療科連携しやすい点」が土台。</div>
+      <div class="point">話すポイント：病気だけでなく「生活」を見据え、医師・看護師・リハスタッフが同じ方向を向いて支援する体制です。</div>
     </section>
 
     <section class="slide" id="slide3">
-      <h2>スライド3｜リハビリ対象と基本方針</h2>
-      <ul>
-        <li>対象は、脳血管障害、整形外科疾患（腰痛・頚部痛・関節疾患）、外科・整形外科術後、スポーツ外傷、長期臥位に伴う廃用症候群など幅広い。</li>
-        <li>方針は、発症・受傷後できるだけ早期に開始し、機能回復だけでなく再発予防・生活指導まで含めること。</li>
-        <li>痛みや日常生活上の困難を軽減し、生活の質向上を目指す。</li>
-      </ul>
-      <div class="point">話すポイント：「治療→改善→再発予防」まで見据える流れを明確に示す。</div>
+      <div class="slide-head"><span class="badge">Slide 3</span><h2>リハビリ対象と基本方針</h2></div>
+      <div class="layout-2">
+        <div>
+          <ul>
+            <li>対象は、脳血管障害、整形外科疾患、術後、スポーツ外傷、廃用症候群など幅広く対応しています。</li>
+            <li>できるだけ早い時期から開始し、身体機能の回復だけでなく、再発予防や生活指導まで一貫して支援します。</li>
+            <li>痛みや不安に配慮しながら、患者さんのペースを尊重して進めます。</li>
+          </ul>
+          <div class="point">話すポイント：「治す」だけでなく、「その人らしい生活に戻る」ことを目標にします。</div>
+        </div>
+        <figure class="visual">
+          <img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1200&q=80" alt="患者と対話する医療スタッフ" />
+          <figcaption class="caption">患者さんのお話を伺いながら、最適な目標を一緒に設定</figcaption>
+        </figure>
+      </div>
     </section>
 
     <section class="slide" id="slide4">
-      <h2>スライド4｜我孫子東邦病院リハの特色（売り）</h2>
+      <div class="slide-head"><span class="badge">Slide 4</span><h2>我孫子東邦病院リハの特色</h2></div>
       <ul>
-        <li>医師指示下で、運動器Ⅰ・脳血管Ⅲの基準で実施。</li>
-        <li>物理療法だけでなく、徒手療法による鎮痛・機能改善＋生活/トレーニング指導を実践。</li>
-        <li>透析患者・糖尿病患者への運動療法、尿失禁への骨盤底筋群トレーニング、排便・排尿コントロール訓練まで対応。</li>
-        <li>ロボット支援前立腺手術（ダヴィンチ）前後の骨盤底筋指導を理学療法士が担当。</li>
-        <li>ゴルフ外来（2017年10月開始）に関連した機能評価・治療にも対応。</li>
+        <li>医師の指示のもと、基準に沿った安全で計画的なリハビリを実施します。</li>
+        <li>徒手療法や運動療法に加え、日常生活で続けられるセルフケアまで丁寧にご案内します。</li>
+        <li>透析患者さん・糖尿病患者さんへの運動療法、骨盤底筋トレーニング、排泄コントロール訓練にも対応します。</li>
+        <li>ロボット支援前立腺手術（ダヴィンチ）前後の骨盤底筋指導を理学療法士が担当します。</li>
+        <li>ゴルフ外来と連携し、趣味や社会参加の再開まで視野に入れて支援します。</li>
       </ul>
-      <div class="point">話すポイント：一般的な整形リハだけでなく、泌尿器・透析と接続した専門性が差別化ポイント。</div>
+      <div class="point">話すポイント：身体機能の回復に加え、患者さんが「また自分らしく動ける」ことを重視しています。</div>
     </section>
 
     <section class="slide" id="slide5">
-      <h2>スライド5｜人的体制・運用（患者導線）</h2>
+      <div class="slide-head"><span class="badge">Slide 5</span><h2>人的体制・運用（患者さんの流れ）</h2></div>
       <ul>
-        <li>リハビリテーション科スタッフは公開ページ上、<strong>理学療法士（PT）5名</strong>。</li>
-        <li>入院・外来双方を担当。</li>
-        <li>外来は「初回医師診察 → 指示箋発行 → PT評価 → 治療計画立案・開始 → 2回目以降予約制」の流れ。</li>
-        <li>日曜は予約外来のみ（担当交代制）。</li>
+        <li>公開情報では、リハビリテーション科は<strong>理学療法士（PT）5名</strong>の体制です。</li>
+        <li>入院・外来の両方で、患者さんの状態に合わせたサポートを行います。</li>
+        <li>外来は「医師診察 → 指示箋 → PT評価 → 治療計画 → 継続フォロー」の流れで、わかりやすく進みます。</li>
+        <li>日曜は予約外来（担当交代制）に対応し、継続しやすい仕組みを整えています。</li>
       </ul>
-      <div class="point">話すポイント：リハの質は「処方→評価→計画→実施」の運用設計で支えられている。</div>
+      <div class="point">話すポイント：初回評価を丁寧に行い、不安や疑問を確認しながら、納得感のある計画を一緒につくります。</div>
     </section>
 
     <section class="slide" id="slide6">
-      <h2>スライド6｜実績として示せる内容（公開情報ベース）</h2>
-      <p class="note">※病院が公表している件数実績は限定的なため、確認可能な実績性情報を整理。</p>
+      <div class="slide-head"><span class="badge">Slide 6</span><h2>実績として示せる内容（公開情報ベース）</h2></div>
+      <p class="note">※現時点の公開情報をもとに、患者さんに伝わりやすい形で整理しています。</p>
       <ul>
-        <li>病院として運動器リハ（Ⅰ）/脳血管等リハ（Ⅲ）などの施設基準を取得・維持。</li>
-        <li>透析・泌尿器領域と連動したリハ（骨盤底筋訓練、排泄コントロール訓練等）を実施していることを明示。</li>
-        <li>2017年開始のゴルフ外来連携など、運動機能評価の専門性を対外提示。</li>
-        <li>サイト上で「病院の実力2026総合編に掲載」の案内あり。</li>
+        <li>運動器リハ（Ⅰ）・脳血管等リハ（Ⅲ）などの施設基準を取得し、継続して運用しています。</li>
+        <li>透析・泌尿器領域と連動したリハビリ内容を明示しており、専門的な支援体制が確認できます。</li>
+        <li>2017年開始のゴルフ外来連携など、日常生活や活動再開を見据えた取り組みがあります。</li>
+        <li>「病院の実力2026総合編に掲載」の案内があり、対外的な情報発信も行っています。</li>
       </ul>
-      <div class="point">補足：症例数・改善率・在院日数短縮率などの定量KPIは、院内資料があればさらに強化可能。</div>
+      <div class="point">補足：院内データ（改善率・在院日数・患者満足度など）を追加すると、安心感と信頼感をさらに高められます。</div>
     </section>
 
     <section class="slide" id="slide7">
-      <h2>スライド7｜まとめ＆提案（プレゼン締め）</h2>
-      <h3>まとめ</h3>
+      <div class="slide-head"><span class="badge">Slide 7</span><h2>まとめ</h2></div>
+      <h3>患者さん目線での価値</h3>
       <ul>
-        <li>強みは、①急性期病院内の多診療科連携、②運動器・脳血管を軸にした標準的リハ、③泌尿器・透析領域と接続した専門的介入。</li>
-        <li>骨盤底筋訓練や術前後介入、ゴルフ外来連携は「売り」として訴求しやすい。</li>
+        <li>急性期病院の連携力を活かし、必要な支援を切れ目なく提供します。</li>
+        <li>身体機能だけでなく、生活や気持ちに寄り添うリハビリを大切にしています。</li>
+        <li>専門領域（透析・泌尿器・術前術後）にも対応し、安心して相談できる体制があります。</li>
       </ul>
-      <h3>次アクション（資料改善案）</h3>
-      <ul>
-        <li>院内から追加収集したいデータ：年間リハ件数（入院/外来別）、疾患別構成比、ADL/FIM改善、疼痛スコア改善、術後早期離床率、再入院率。</li>
-        <li>定量データを追加すれば、経営層・地域連携先向けにも説得力が高まる。</li>
-      </ul>
+      <h3>締めメッセージ</h3>
+      <div class="message">
+        私たちは、患者さん一人ひとりの目標と不安に丁寧に向き合い、
+        「できること」を少しずつ増やしていく過程を、誠実に支え続けます。
+      </div>
     </section>
   </main>
 
