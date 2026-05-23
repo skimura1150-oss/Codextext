@@ -3,241 +3,116 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>NVIDIA × Intel 半導体の歴史タイムライン</title>
+  <title>Codex Pet 生成メーカー</title>
   <style>
-    :root {
-      --bg: #090f1a;
-      --panel: #101a2b;
-      --panel-2: #0d1524;
-      --text: #e8eef9;
-      --muted: #a5b4cc;
-      --line: #23314a;
-      --intel: #2d8cff;
-      --intel-soft: #143760;
-      --nvidia: #7ad61d;
-      --nvidia-soft: #264a15;
-      --accent: #66d9ff;
-    }
-    * { box-sizing: border-box; }
-    html, body { margin: 0; padding: 0; }
-    body {
-      font-family: "Inter", "Noto Sans JP", system-ui, -apple-system, sans-serif;
-      color: var(--text);
-      background: radial-gradient(circle at 20% 0%, #13223b 0%, var(--bg) 40%) fixed;
-      line-height: 1.75;
-    }
-    .container { width: min(1100px, 94vw); margin: 0 auto; }
-    section { padding: 64px 0; }
-
-    .hero { min-height: 80vh; display: grid; place-items: center; text-align: center; }
-    .hero-box {
-      background: linear-gradient(140deg, rgba(16,26,43,.9), rgba(13,21,36,.9));
-      border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 42px 28px;
-      box-shadow: 0 20px 50px rgba(0,0,0,.35);
-      opacity: 0;
-      transform: translateY(24px);
-      animation: fadeUp 1.1s .2s forwards;
-    }
-    h1 { font-size: clamp(2rem, 6vw, 3.3rem); margin: 0 0 8px; letter-spacing: .02em; }
-    .subtitle { font-size: clamp(1rem, 2.5vw, 1.25rem); color: var(--muted); margin: 0; }
-    .logos { margin-top: 16px; font-weight: 700; letter-spacing: .08em; }
-    .logos .i { color: var(--intel); } .logos .n { color: var(--nvidia); }
-
-    h2 { font-size: clamp(1.45rem, 3vw, 2rem); margin: 0 0 18px; }
-    .cards-2 {
-      display: grid; gap: 14px; grid-template-columns: repeat(2, minmax(0, 1fr));
-    }
-    .card {
-      background: linear-gradient(160deg, var(--panel), var(--panel-2));
-      border: 1px solid var(--line); border-radius: 14px; padding: 18px;
-    }
-    .tag { font-size: .8rem; padding: 4px 10px; border-radius: 999px; display: inline-block; margin-bottom: 8px; }
-    .intel { color: #d6ebff; background: var(--intel-soft); border: 1px solid #1d5fa5; }
-    .nvidia { color: #e8ffd2; background: var(--nvidia-soft); border: 1px solid #4e8a19; }
-
-    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 16px; }
-    button {
-      background: #16233a; color: var(--text); border: 1px solid #2c3d5c;
-      padding: 10px 14px; border-radius: 10px; cursor: pointer; font-weight: 600;
-    }
-    button.active { outline: 2px solid var(--accent); background: #1d2f4d; }
-
-    .timeline { position: relative; margin: 20px 0; }
-    .timeline::before {
-      content: ""; position: absolute; left: 50%; top: 0; bottom: 0; width: 2px;
-      background: linear-gradient(var(--intel), var(--nvidia)); opacity: .5;
-    }
-    .event {
-      width: calc(50% - 26px);
-      margin: 22px 0;
-      padding: 16px;
-      border-radius: 12px;
-      border: 1px solid var(--line);
-      background: #0f1a2d;
-      opacity: 0;
-      transform: translateY(26px);
-      transition: .7s ease;
-      position: relative;
-    }
-    .event.show { opacity: 1; transform: translateY(0); }
-    .event.left { margin-right: auto; transform: translate(-30px, 26px); }
-    .event.right { margin-left: auto; transform: translate(30px, 26px); }
-    .event.left.show, .event.right.show { transform: translate(0,0); }
-    .event.intel-event { border-left: 4px solid var(--intel); }
-    .event.nvidia-event { border-left: 4px solid var(--nvidia); }
-    .year { font-weight: 800; font-size: 1.15rem; }
-    .why { color: var(--muted); font-size: .95rem; margin-top: 6px; }
-
-    .icons { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 12px; }
-    .chip {
-      width: 70px; height: 70px; border-radius: 14px; border: 1px solid #334869;
-      display: grid; place-items: center; background: #12213a;
-      animation: float 3s ease-in-out infinite;
-    }
-    .chip:nth-child(2){ animation-delay: .5s; }
-    .chip:nth-child(3){ animation-delay: 1s; }
-    .chip svg { width: 38px; height: 38px; }
-
-    .summary-grid { display:grid; grid-template-columns: repeat(3,1fr); gap: 12px; }
-
-    .hidden-intel .intel-event,
-    .hidden-intel .intel-only,
-    .hidden-nvidia .nvidia-event,
-    .hidden-nvidia .nvidia-only { display: none; }
-
-    @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
-    @keyframes float { 0%,100%{ transform: translateY(0);} 50%{ transform: translateY(-8px);} }
-
-    @media (max-width: 900px) {
-      .cards-2, .summary-grid { grid-template-columns: 1fr; }
-      .timeline::before { left: 12px; }
-      .event { width: calc(100% - 26px); margin-left: 26px !important; margin-right: 0 !important; }
-      .event.left, .event.right { transform: translateY(24px); }
-      .event.left.show, .event.right.show { transform: translateY(0); }
-    }
+    :root { --bg:#0b1020; --panel:#141c33; --line:#2a3556; --text:#e7edff; --muted:#aeb8d8; --accent:#7dd3fc; }
+    *{box-sizing:border-box} body{margin:0;font-family:"Inter","Noto Sans JP",sans-serif;background:radial-gradient(circle at top,#182543,var(--bg));color:var(--text)}
+    .wrap{width:min(980px,92vw);margin:40px auto}
+    .card{background:linear-gradient(160deg,#121a31,#0f1629);border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 14px 34px rgba(0,0,0,.28)}
+    h1{font-size:clamp(1.8rem,4vw,2.8rem);margin:0 0 6px}.muted{color:var(--muted)}
+    .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    label{font-size:.9rem;color:var(--muted);display:block;margin:8px 0 6px}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid #334066;background:#0d152a;color:var(--text)}
+    textarea{min-height:90px;resize:vertical}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+    button{padding:10px 14px;border-radius:10px;border:1px solid #456;background:#1b2a4c;color:var(--text);font-weight:700;cursor:pointer}
+    .primary{background:#155e75;border-color:#0e7490}
+    pre{white-space:pre-wrap;background:#0a1224;border:1px solid #2e3a5a;border-radius:12px;padding:14px;line-height:1.6}
+    .tip{font-size:.9rem;color:#c2d6ff;background:#0f203f;border:1px solid #28467a;border-radius:10px;padding:10px;margin-top:12px}
+    @media (max-width:760px){.grid{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <section class="hero">
-    <div class="container hero-box">
-      <h1>NVIDIA × Intel</h1>
-      <p class="subtitle">半導体の歴史タイムライン<br>PC時代からAI時代へ、2社の歩みを比較</p>
-      <p class="logos"><span class="i">INTEL</span> × <span class="n">NVIDIA</span></p>
-    </div>
-  </section>
+  <main class="wrap">
+    <section class="card">
+      <h1>CodexのPet生成メーカー</h1>
+      <p class="muted">パラメータを入力すると、<b>/hatch</b> や生成AIに渡せる「ペット仕様プロンプト」を自動生成します。</p>
 
-  <section class="container">
-    <h2>2社のざっくり比較</h2>
-    <div class="cards-2">
-      <article class="card intel-only">
-        <span class="tag intel">Intel</span>
-        <ul>
-          <li><b>創業年：</b>1968年</li>
-          <li><b>主力分野：</b>CPU、PC/サーバー向け半導体</li>
-          <li><b>代表技術：</b>x86アーキテクチャ、Pentium、Core</li>
-          <li><b>現在地：</b>CPUの強みを軸に、製造力の再強化を進行中</li>
-        </ul>
-      </article>
-      <article class="card nvidia-only">
-        <span class="tag nvidia">NVIDIA</span>
-        <ul>
-          <li><b>創業年：</b>1993年</li>
-          <li><b>主力分野：</b>GPU、AI向け計算基盤</li>
-          <li><b>代表技術：</b>GeForce、CUDA、データセンターGPU</li>
-          <li><b>現在地：</b>AIインフラの中心企業の1社</li>
-        </ul>
-      </article>
-    </div>
-  </section>
-
-  <section class="container" id="timelineArea">
-    <h2>歴史タイムライン（比較表示）</h2>
-    <div class="controls">
-      <button class="active" data-mode="both">比較表示</button>
-      <button data-mode="intel">Intelだけ</button>
-      <button data-mode="nvidia">NVIDIAだけ</button>
-    </div>
-
-    <div class="timeline">
-      <article class="event left intel-event"><div class="year">1968</div><b>Intel創業</b><div class="why">半導体の設計・製造を一体で進める企業として出発。後のPC時代の土台をつくりました。</div></article>
-      <article class="event right intel-event"><div class="year">1971</div><b>4004（初期マイクロプロセッサ）</b><div class="why">「CPUを1チップに載せる」流れの象徴で、コンピューターの小型化を前進させました。</div></article>
-      <article class="event left intel-event"><div class="year">1978〜</div><b>x86系CPUの拡大</b><div class="why">IBM PC互換機の普及とともにx86が標準化し、Intelの存在感が急上昇しました。</div></article>
-      <article class="event right intel-event"><div class="year">1993</div><b>Pentium登場</b><div class="why">一般ユーザーにもCPU性能が意識される時代をつくり、PC市場の拡大を後押ししました。</div></article>
-      <article class="event left intel-event"><div class="year">2000年代〜</div><b>PC時代の中核企業へ</b><div class="why">企業・家庭のPC普及の中心で、CPU市場を長くリードしました。</div></article>
-      <article class="event right intel-event"><div class="year">2021〜</div><b>再建・巻き返しフェーズ</b><div class="why">製造投資やAI向け製品を強化し、競争が激しい時代で再成長を狙っています。</div></article>
-
-      <article class="event left nvidia-event"><div class="year">1993</div><b>NVIDIA創業</b><div class="why">3Dグラフィックス需要の拡大を見据え、GPU分野で勝負を開始しました。</div></article>
-      <article class="event right nvidia-event"><div class="year">1999</div><b>GeForce 256（GPU）</b><div class="why">GPUの概念を広め、ゲーム体験の進化を加速させました。</div></article>
-      <article class="event left nvidia-event"><div class="year">2006</div><b>CUDA公開</b><div class="why">GPUを描画以外の計算に使える環境を提供し、AI・科学計算への道を開きました。</div></article>
-      <article class="event right nvidia-event"><div class="year">2010年代</div><b>データセンター領域へ拡大</b><div class="why">クラウドや大規模計算の需要に合わせ、GPUの用途を企業向けに広げました。</div></article>
-      <article class="event left nvidia-event"><div class="year">2020年代</div><b>AI時代で飛躍</b><div class="why">生成AIブームで学習・推論向けGPU需要が急増し、業界の中心プレイヤーへ。</div></article>
-    </div>
-  </section>
-
-  <section class="container">
-    <h2>2社の転機比較</h2>
-    <div class="cards-2">
-      <article class="card intel-only"><span class="tag intel">Intelの転機</span><p>PC普及期にCPUの標準を押さえて成長。その後は製造競争・新市場対応が課題となり、近年は再投資で巻き返しを進めています。</p></article>
-      <article class="card nvidia-only"><span class="tag nvidia">NVIDIAの転機</span><p>ゲームGPUで築いた技術をCUDAで汎用計算に展開。AI向けデータセンター需要を捉え、企業の重心を大きく拡大しました。</p></article>
-    </div>
-  </section>
-
-  <section class="container">
-    <h2>現在地の比較</h2>
-    <div class="summary-grid">
-      <article class="card intel-only"><span class="tag intel">Intel</span><b>CPU中心</b><p>PC・サーバーCPUで強い基盤。AI対応を強化中。</p></article>
-      <article class="card nvidia-only"><span class="tag nvidia">NVIDIA</span><b>GPU・AI中心</b><p>AI開発で必要な計算基盤を広く提供。</p></article>
-      <article class="card"><span class="tag">業界全体</span><b>役割の違い</b><p>Intelは汎用計算の伝統的中核、NVIDIAは並列計算・AI加速の中核という構図が目立ちます。</p></article>
-    </div>
-
-    <div class="icons" aria-label="半導体イメージアイコン">
-      <div class="chip" title="CPU">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#63a9ff" stroke-width="1.7"><rect x="6" y="6" width="12" height="12"/><path d="M9 1v4M15 1v4M9 19v4M15 19v4M1 9h4M1 15h4M19 9h4M19 15h4"/></svg>
+      <div class="grid">
+        <div>
+          <label for="name">Pet名</label>
+          <input id="name" value="NeoFox" />
+        </div>
+        <div>
+          <label for="species">モチーフ</label>
+          <input id="species" value="キツネ" />
+        </div>
+        <div>
+          <label for="style">アートスタイル</label>
+          <select id="style">
+            <option>pixel-art 32x32</option><option>pixel-art 48x48</option><option>low-poly toon</option>
+          </select>
+        </div>
+        <div>
+          <label for="mood">性格</label>
+          <input id="mood" value="好奇心旺盛でちょっと照れ屋" />
+        </div>
       </div>
-      <div class="chip" title="GPU">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#8be34a" stroke-width="1.7"><rect x="3" y="7" width="18" height="10" rx="2"/><circle cx="10" cy="12" r="2.8"/><path d="M21 10h2v4h-2"/></svg>
-      </div>
-      <div class="chip" title="AI">
-        <svg viewBox="0 0 24 24" fill="none" stroke="#69dcff" stroke-width="1.7"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.2 2.2M16.9 16.9l2.2 2.2M19.1 4.9l-2.2 2.2M7.1 16.9l-2.2 2.2"/></svg>
-      </div>
-    </div>
-  </section>
 
-  <section class="container">
-    <h2>まとめ</h2>
-    <div class="card">
-      <ul>
-        <li>Intelは、PC時代を長く支えたCPUの中核企業。</li>
-        <li>NVIDIAは、GPUからAI時代の中心へ成長した企業。</li>
-        <li>2社を比べると、半導体産業が「PC中心」から「AI中心」へ重心を移した流れが見えてきます。</li>
-      </ul>
-      <p style="color:var(--muted); margin:10px 0 0;">※年号・出来事は、一般に広く知られる企業史の要点を学習向けに整理したものです。</p>
-    </div>
-  </section>
+      <label for="colors">テーマカラー（カンマ区切り）</label>
+      <input id="colors" value="#7dd3fc, #1e3a8a, #f8fafc" />
 
-<script>
-  const events = document.querySelectorAll('.event');
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) e.target.classList.add('show');
+      <label for="actions">モーション案（カンマ区切り）</label>
+      <input id="actions" value="idle, walk, jump, celebrate, sleep" />
+
+      <label for="lore">バックストーリー（任意）</label>
+      <textarea id="lore">夜のコーディング中にログから生まれた、デバッグが得意な小さな精霊。</textarea>
+
+      <div class="row">
+        <button class="primary" id="generate">プロンプトを生成</button>
+        <button id="copy">コピー</button>
+      </div>
+
+      <h3>生成結果</h3>
+      <pre id="result"></pre>
+      <p class="tip">ヒント: 生成結果をそのまま Codex の /hatch や画像生成モデルに貼り付けると、pet.json / spritesheet 制作の土台として使えます。</p>
+    </section>
+  </main>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+    const result = $('result');
+
+    function buildPrompt() {
+      const name = $('name').value.trim();
+      const species = $('species').value.trim();
+      const style = $('style').value;
+      const mood = $('mood').value.trim();
+      const colors = $('colors').value.trim();
+      const actions = $('actions').value.split(',').map(v => v.trim()).filter(Boolean);
+      const lore = $('lore').value.trim();
+
+      return [
+`あなたはCodex Pet制作者です。次の条件でカスタムPetを設計してください。`,
+`- Name: ${name}`,
+`- Motif: ${species}`,
+`- Style: ${style}`,
+`- Personality: ${mood}`,
+`- Theme colors: ${colors}`,
+`- Required animations: ${actions.join(', ')}`,
+`- Lore: ${lore || 'なし'}`,
+`出力要件:`,
+`1) pet.jsonの項目案（name, description, personality, states, animation設定）`,
+`2) spritesheet作成ガイド（各アニメのフレーム数と順番）`,
+`3) 導入手順（配置パスと起動コマンド例）`,
+`4) 改良案を3つ`
+      ].join('\n');
+    }
+
+    function render() { result.textContent = buildPrompt(); }
+
+    $('generate').addEventListener('click', render);
+    $('copy').addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(result.textContent);
+        $('copy').textContent = 'コピー済み';
+        setTimeout(() => $('copy').textContent = 'コピー', 1200);
+      } catch {
+        $('copy').textContent = 'コピー失敗';
+      }
     });
-  }, { threshold: 0.15 });
-  events.forEach(el => observer.observe(el));
 
-  const timelineArea = document.getElementById('timelineArea');
-  const buttons = document.querySelectorAll('button[data-mode]');
-  buttons.forEach(btn => {
-    btn.addEventListener('click', () => {
-      buttons.forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const mode = btn.dataset.mode;
-      timelineArea.classList.remove('hidden-intel', 'hidden-nvidia');
-      if (mode === 'intel') timelineArea.classList.add('hidden-nvidia');
-      if (mode === 'nvidia') timelineArea.classList.add('hidden-intel');
-    });
-  });
-</script>
+    render();
+  </script>
 </body>
 </html>
